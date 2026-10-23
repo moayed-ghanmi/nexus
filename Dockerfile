@@ -20,9 +20,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY app/ ./app/
 COPY static/ ./static/
-COPY data/ ./data/
 COPY run.py .
-COPY backup.py .
 
 RUN mkdir -p /app/data/backups /app/data/invoices /app/data/sent_receipts /app/static/uploads/receipts
 
