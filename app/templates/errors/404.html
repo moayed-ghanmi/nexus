@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found | NEXUS KEYS{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-20 text-center space-y-5">
+    <div class="w-16 h-16 rounded-3xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400">
+        <i data-lucide="compass" class="w-8 h-8"></i>
+    </div>
+    <span class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">Error 404 // Lost in cyberspace</span>
+    <h1 class="text-3xl font-black text-white">Digital Resource Not Found</h1>
+    <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+        The requested digital page, activation route, or product catalog item does not exist or has been relocated.
+    </p>
+    <div class="pt-4">
+        <a href="/" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs shadow-lg shadow-cyan-500/20 transition">
+            <i data-lucide="arrow-left" class="w-4 h-4 text-black"></i>
+            <span>Return to Storefront</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

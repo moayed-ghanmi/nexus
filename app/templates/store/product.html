@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }} | Buy Digital Key | NEXUS KEYS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-400">
+        <a href="/" class="hover:text-cyan-400 transition">Store</a>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-600"></i>
+        <a href="/?cat={{ product.category.slug }}" class="hover:text-cyan-400 transition">{{ product.category.name }}</a>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-600"></i>
+        <span class="text-slate-200 font-bold truncate max-w-xs">{{ product.title }}</span>
+    </nav>
+
+    <!-- Main Product Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <!-- Left: Product Media & Trust Badges (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden p-3 relative group">
+                <div class="relative h-80 rounded-2xl overflow-hidden bg-slate-950">
+                    <img 
+                        src="{{ product.image_url }}" 
+                        alt="{{ product.title }}" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        onerror="this.src='https://images.unsplash.com/photo-1612287232230-e3778dfc5c70?auto=format&fit=crop&w=600&q=80'"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
+
+                    <!-- Top Badges -->
+                    <div class="absolute top-4 left-4 flex items-center gap-2">
+                        {% if product.badge %}
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-cyan-500 text-black shadow-lg">
+                            {{ product.badge }}
+                        </span>
+                        {% endif %}
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold code-font bg-slate-950/90 text-slate-200 border border-slate-700">
+                            {{ product.region }}
+                        </span>
+                    </div>
+
+                    <!-- Top Right Wishlist Toggle Button -->
+                    <button 
+                        type="button" 
+                        data-wishlist-product-id="{{ product.id }}"
+                        onclick="window.NexusWishlist.toggle({{ product.id }}, this)"
+                        class="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl bg-slate-950/80 backdrop-blur-md border border-slate-700/60 text-slate-400 hover:text-rose-400 hover:border-rose-500/50 flex items-center justify-center transition shadow-lg group/btn"
+                        title="Save to Wishlist & Restock Alert">
+                        <i data-lucide="heart" class="w-4 h-4 group-hover/btn:scale-110 transition-transform"></i>
+                    </button>
+
+                    <div class="absolute bottom-4 left-4">
+                        <span class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-900/90 text-cyan-300 border border-cyan-800/60">
+                            {{ product.platform }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guarantee Badges -->
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 grid grid-cols-2 gap-3 text-xs">
+                <div class="flex items-center gap-2.5 text-slate-300">
+                    <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Instant Digital Reveal</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-slate-300">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                    <span>Official Genuine Code</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-slate-300">
+                    <i data-lucide="repeat" class="w-4 h-4 text-purple-400"></i>
+                    <span>Lifetime Vault Access</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-slate-300">
+                    <i data-lucide="headset" class="w-4 h-4 text-amber-400"></i>
+                    <span>24/7 Redemption Help</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Purchasing Details & Actions (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">{{ product.category.name }}</span>
+                    <span class="text-slate-600">•</span>
+                    <a href="#reviews" class="flex items-center gap-1 text-amber-400 text-xs font-bold hover:text-amber-300 transition">
+                        <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                        <span>{{ product.average_rating }}</span>
+                        <span class="text-slate-500 font-normal">({{ product.reviews_count }} verified reviews)</span>
+                    </a>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-black text-white leading-tight">
+                    {{ product.title }}
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-400 mt-3 leading-relaxed">
+                    {{ product.description }}
+                </p>
+            </div>
+
+            <!-- Stock Status & Region Notice -->
+            <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 rounded-full {% if product.available_keys_count > 0 %}bg-emerald-500 animate-ping{% else %}bg-red-500{% endif %}"></div>
+                    <div>
+                        <span class="text-xs font-bold text-white">
+                            {% if product.available_keys_count > 0 %}
+                                Ready in Stock: <span class="text-emerald-400">{{ product.available_keys_count }} license keys</span>
+                            {% else %}
+                                <span class="text-rose-400">Currently Sold Out</span>
+                            {% endif %}
+                        </span>
+                        <p class="text-[11px] text-slate-500">Automated key dispatcher is active</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-xs text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                    <i data-lucide="globe" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Region: <strong class="text-white">{{ product.region }}</strong></span>
+                </div>
+            </div>
+
+            <!-- Price & Order Bar -->
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-6">
+                <div class="flex items-baseline justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Official Price</span>
+                        <div class="text-3xl font-black text-cyan-400">${{ "%.2f"|format(product.price) }}</div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800 text-emerald-400 text-xs font-bold">
+                        ⚡ Instant Delivery Included
+                    </span>
+                </div>
+
+                <!-- Quantity & Add to Cart -->
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl p-1.5 w-full sm:w-auto">
+                        <button 
+                            type="button" 
+                            onclick="adjustQty(-1)"
+                            class="w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-base transition">
+                            -
+                        </button>
+                        <input 
+                            type="number" 
+                            id="order-qty" 
+                            value="1" 
+                            min="1" 
+                            max="{{ product.available_keys_count }}"
+                            readonly
+                            class="w-14 text-center bg-transparent text-sm font-bold text-white focus:outline-none"
+                        />
+                        <button 
+                            type="button" 
+                            onclick="adjustQty(1)"
+                            class="w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-base transition">
+                            +
+                        </button>
+                    </div>
+
+                    <button 
+                        type="button" 
+                        onclick="addToCartWithQty()"
+                        {% if product.available_keys_count == 0 %}disabled{% endif %}
+                        class="flex-1 w-full py-3.5 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs uppercase tracking-wider border border-slate-700 hover:border-cyan-500 transition flex items-center justify-center gap-2">
+                        <i data-lucide="shopping-cart" class="w-4 h-4 text-cyan-400"></i>
+                        <span>Add to Cart</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        onclick="buyNow()"
+                        {% if product.available_keys_count == 0 %}disabled{% endif %}
+                        class="flex-1 w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-cyan-500/25 transition flex items-center justify-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4 text-black"></i>
+                        <span>Instant Buy Now</span>
+                    </button>
+                </div>
+
+                <!-- Wishlist & Restock Alert Action -->
+                <div class="pt-2 border-t border-slate-800/80">
+                    <button 
+                        type="button" 
+                        data-wishlist-product-id="{{ product.id }}"
+                        onclick="window.NexusWishlist.toggle({{ product.id }}, this)"
+                        class="w-full py-2.5 px-4 rounded-xl bg-slate-950/70 hover:bg-slate-950 border border-slate-800 text-slate-300 hover:text-rose-400 font-bold text-xs transition flex items-center justify-center gap-2 group">
+                        <i data-lucide="heart" class="w-4 h-4 text-slate-400 group-hover:scale-110 group-hover:text-rose-400 transition"></i>
+                        <span>Save to Wishlist &amp; Restock Radar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs: Guide & Requirements -->
+            <div class="border-b border-slate-800 flex gap-6 text-xs font-bold">
+                <button type="button" onclick="switchTab('guide')" id="tab-btn-guide" class="pb-3 text-cyan-400 border-b-2 border-cyan-400">
+                    How to Redeem & Activate
+                </button>
+                <button type="button" onclick="switchTab('warranty')" id="tab-btn-warranty" class="pb-3 text-slate-500 hover:text-slate-300">
+                    Delivery & Guarantee
+                </button>
+            </div>
+
+            <div id="tab-content-guide" class="text-xs text-slate-400 space-y-3 leading-relaxed bg-slate-900/40 p-5 rounded-2xl border border-slate-800">
+                <p class="font-bold text-slate-200">Follow these 3 easy steps to activate your code:</p>
+                <ol class="list-decimal pl-5 space-y-2 text-slate-400">
+                    <li>Log into your official client or portal (<span class="text-cyan-300">{{ product.platform }}</span>).</li>
+                    <li>Navigate to <strong>Account Settings > Redeem a Code or Gift Card</strong>.</li>
+                    <li>Copy your genuine digital key directly from your <a href="/profile#vault" class="text-cyan-400 underline">Nexus Keys Vault</a> and paste it to activate.</li>
+                </ol>
+            </div>
+
+            <div id="tab-content-warranty" class="text-xs text-slate-400 space-y-2 leading-relaxed bg-slate-900/40 p-5 rounded-2xl border border-slate-800 hidden">
+                <p>All digital products sold on NEXUS KEYS are 100% genuine and sourced directly from verified distributors. In the rare case of any redemption difficulty, our 24/7 technical team is available to assist or issue a replacement immediately.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Phase 7: Customer Reviews & Verified Buyer Ratings Section -->
+    <div id="reviews" class="pt-8 border-t border-slate-800 space-y-6">
+        
+        <!-- Review Flash Notification -->
+        <div id="reviewSuccessNotice" class="hidden p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs font-semibold flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                <span>Thank you! Your product review has been submitted and published.</span>
+            </div>
+            <button onclick="this.parentElement.style.display='none'" class="text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+        </div>
+
+        <!-- Section Header & Rating Card -->
+        <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+                <div class="text-center sm:text-left">
+                    <div class="text-4xl font-black text-amber-400 font-mono flex items-center justify-center sm:justify-start gap-2">
+                        <span>{{ product.average_rating }}</span>
+                        <i data-lucide="star" class="w-7 h-7 fill-amber-400 text-amber-400"></i>
+                    </div>
+                    <span class="text-xs text-slate-400 mt-1 block">Based on {{ product.reviews_count }} verified reviews</span>
+                </div>
+                <div class="h-10 w-px bg-slate-800 hidden sm:block"></div>
+                <div>
+                    <h3 class="text-lg font-black text-white">Customer Reviews & Ratings</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Authentic feedback from real gamers and verified purchasers.</p>
+                </div>
+            </div>
+
+            <div>
+                {% if current_user %}
+                <button type="button" onclick="toggleReviewForm()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <span>Write a Review</span>
+                </button>
+                {% else %}
+                <a href="/auth/login?next=/product/{{ product.slug }}#reviews" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2">
+                    <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+                    <span>Sign In to Review</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Review Submission Form (Toggled) -->
+        {% if current_user %}
+        <div id="reviewFormContainer" class="hidden bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="message-square-plus" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Submit Your Review for {{ product.title }}</span>
+                </h4>
+                <button type="button" onclick="toggleReviewForm()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form action="/product/{{ product.slug }}/review" method="POST" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Your Rating</label>
+                        <select name="rating" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold focus:outline-none focus:border-amber-500">
+                            <option value="5" selected>★★★★★ 5 Stars - Exceptional</option>
+                            <option value="4">★★★★☆ 4 Stars - Very Good</option>
+                            <option value="3">★★★☆☆ 3 Stars - Average</option>
+                            <option value="2">★★☆☆☆ 2 Stars - Below Expectations</option>
+                            <option value="1">★☆☆☆☆ 1 Star - Poor</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Review Headline</label>
+                        <input type="text" name="headline" required placeholder="e.g. Instant delivery, activated seamlessly!" 
+                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Detailed Feedback</label>
+                    <textarea name="comment" rows="3" required placeholder="Share your experience with the key activation, platform redemption, or delivery speed..."
+                              class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cyan-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                    <div class="text-[11px] text-slate-400">
+                        {% if has_purchased %}
+                        <span class="text-emerald-400 font-bold flex items-center gap-1">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Verified Buyer status verified from your order history.
+                        </span>
+                        {% else %}
+                        <span>Review will be published under your registered customer account.</span>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                        <span>Publish Review</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Reviews List -->
+        <div class="space-y-3">
+            {% for r in reviews %}
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold">
+                            {{ r.user.full_name[0] }}
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-white">{{ r.user.full_name }}</span>
+                            {% if r.user %}
+                                {% set rtier = r.user.loyalty_tier %}
+                                {% if rtier.slug != 'bronze' %}
+                                <span class="ml-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full {{ rtier.badge_color }} text-[9px] font-black uppercase font-mono tracking-wider">
+                                    <i data-lucide="{{ rtier.icon }}" class="w-2.5 h-2.5"></i> {{ rtier.name }}
+                                </span>
+                                {% endif %}
+                            {% endif %}
+                            {% if r.is_verified_purchase %}
+                            <span class="ml-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-800/80 text-emerald-400 text-[10px] font-bold">
+                                <i data-lucide="shield-check" class="w-3 h-3"></i> Verified Buyer
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <span class="text-[10px] text-slate-500 font-mono">{{ r.created_at.strftime('%b %d, %Y') if r.created_at else '' }}</span>
+                </div>
+
+                <div class="flex items-center gap-0.5 text-amber-400">
+                    {% for star in range(r.rating) %}
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                    {% endfor %}
+                    {% for empty_star in range(5 - r.rating) %}
+                    <i data-lucide="star" class="w-3.5 h-3.5 text-slate-700"></i>
+                    {% endfor %}
+                    <span class="text-xs font-bold text-white ml-2">{{ r.headline }}</span>
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed">{{ r.comment }}</p>
+            </div>
+            {% else %}
+            <div class="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-8 text-center text-slate-400 text-xs">
+                <i data-lucide="message-square" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+                <p class="font-bold text-slate-300">No customer reviews yet.</p>
+                <p class="text-slate-500 mt-1">Be the first to share your thoughts after purchase!</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products and related_products|length > 0 %}
+    <div class="pt-8 border-t border-slate-800">
+        <h3 class="text-lg font-black text-white mb-6">You May Also Like in {{ product.category.name }}</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {% for rp in related_products %}
+            <a href="/product/{{ rp.slug }}" class="group bg-slate-900 border border-slate-800 rounded-2xl p-4 hover:border-cyan-500/40 transition block">
+                <div class="h-32 rounded-xl bg-slate-950 overflow-hidden mb-3">
+                    <img src="{{ rp.image_url }}" alt="{{ rp.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                </div>
+                <span class="text-[10px] text-cyan-400 font-bold uppercase">{{ rp.platform }}</span>
+                <h4 class="text-xs font-bold text-white group-hover:text-cyan-300 transition mt-1 truncate">{{ rp.title }}</h4>
+                <div class="text-sm font-black text-cyan-400 mt-2">${{ "%.2f"|format(rp.price) }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const maxStock = {{ product.available_keys_count }};
+    const productId = {{ product.id }};
+    const productTitle = "{{ product.title }}";
+    const productPrice = {{ product.price }};
+    const productImage = "{{ product.image_url }}";
+    const productPlatform = "{{ product.platform }}";
+
+    function adjustQty(delta) {
+        const input = document.getElementById('order-qty');
+        let current = parseInt(input.value) || 1;
+        current += delta;
+        if (current < 1) current = 1;
+        if (maxStock > 0 && current > maxStock) current = maxStock;
+        input.value = current;
+    }
+
+    function addToCartWithQty() {
+        const qty = parseInt(document.getElementById('order-qty').value) || 1;
+        window.NexusCart.addItem({
+            id: productId,
+            title: productTitle,
+            price: productPrice,
+            image_url: productImage,
+            platform: productPlatform,
+            qty: qty
+        });
+        showGlobalToast(productTitle, `Added ${qty} item(s) to your cart.`);
+    }
+
+    function buyNow() {
+        addToCartWithQty();
+        window.location.href = "/cart";
+    }
+
+    function switchTab(tab) {
+        const guideBtn = document.getElementById('tab-btn-guide');
+        const warrantyBtn = document.getElementById('tab-btn-warranty');
+        const guideContent = document.getElementById('tab-content-guide');
+        const warrantyContent = document.getElementById('tab-content-warranty');
+
+        if (tab === 'guide') {
+            guideBtn.className = "pb-3 text-cyan-400 border-b-2 border-cyan-400";
+            warrantyBtn.className = "pb-3 text-slate-500 hover:text-slate-300";
+            guideContent.classList.remove('hidden');
+            warrantyContent.classList.add('hidden');
+        } else {
+            warrantyBtn.className = "pb-3 text-cyan-400 border-b-2 border-cyan-400";
+            guideBtn.className = "pb-3 text-slate-500 hover:text-slate-300";
+            warrantyContent.classList.remove('hidden');
+            guideContent.classList.add('hidden');
+        }
+    }
+
+    function toggleReviewForm() {
+        const form = document.getElementById('reviewFormContainer');
+        if (form) {
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) {
+                form.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    }
+
+    if (window.location.search.includes('review=success')) {
+        const notice = document.getElementById('reviewSuccessNotice');
+        if (notice) notice.classList.remove('hidden');
+    }
+</script>
+{% endblock %}

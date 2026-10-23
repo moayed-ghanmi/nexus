@@ -1,0 +1,23 @@
+services:
+  nexus-keys:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nexus-keys:latest
+    container_name: nexus-keys-platform
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+    env_file:
+      - .env
+    volumes:
+      # Persistent storage for SQLite database, PDF invoices & email logs
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

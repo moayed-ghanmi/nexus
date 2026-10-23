@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTRICTED ACCESS // ADMIN GATE</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #07090e;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 bg-[#07090e] text-slate-100 antialiased selection:bg-rose-600 selection:text-white">
+
+    <div class="w-full max-w-md relative">
+        <!-- Stealth Security Header Badge -->
+        <div class="mb-4 text-center">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/60 border border-rose-800/80 text-[11px] code-font text-rose-400 font-bold uppercase tracking-widest shadow-lg shadow-rose-950/50">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                INTERNAL ACCESS GATE // LEVEL-1 PROTECTED
+            </span>
+        </div>
+
+        <div class="bg-slate-900/95 border border-rose-900/40 rounded-3xl p-8 shadow-2xl shadow-rose-950/30 backdrop-blur-xl relative overflow-hidden">
+            <!-- Top Alert Bar -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-600 via-amber-500 to-indigo-600"></div>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center mx-auto mb-3 text-rose-400 shadow-inner">
+                    <i data-lucide="shield-alert" class="w-7 h-7"></i>
+                </div>
+                <h1 class="text-xl font-black text-white tracking-wide code-font">ADMINISTRATOR PORTAL</h1>
+                <p class="text-[11px] text-slate-400 mt-1">This portal is hidden from public indexing. Authorized personnel only.</p>
+            </div>
+
+            <!-- Demo Admin Fast Helper -->
+            <div class="mb-6 p-3 bg-slate-950 border border-rose-900/30 rounded-xl flex items-center justify-between text-xs code-font">
+                <div>
+                    <span class="text-slate-500">Super Admin:</span>
+                    <span class="text-rose-400 font-bold block sm:inline sm:ml-1">admin@vault.internal</span>
+                </div>
+                <button 
+                    type="button" 
+                    onclick="fillAdminCredentials()"
+                    class="px-2.5 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 rounded-lg text-[11px] font-bold transition">
+                    Fill Admin
+                </button>
+            </div>
+
+            {% if error_message %}
+                <div class="mb-4 p-3 bg-rose-950/60 border border-rose-800 text-rose-300 text-xs rounded-xl flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 text-rose-400"></i>
+                    <span>{{ error_message }}</span>
+                </div>
+            {% endif %}
+
+            <form action="{{ admin_secret_url }}/login" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 code-font">Admin Identity</label>
+                    <div class="relative">
+                        <input 
+                            type="email" 
+                            name="email" 
+                            id="admin_email"
+                            required 
+                            placeholder="admin@vault.internal"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs code-font text-slate-100 placeholder-slate-600 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition"
+                        />
+                        <i data-lucide="user-check" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 code-font">Master Security Key</label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="admin_password"
+                            required 
+                            placeholder="••••••••••••••••"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs code-font text-slate-100 placeholder-slate-600 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition"
+                        />
+                        <i data-lucide="key-round" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3"></i>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button 
+                        type="submit" 
+                        class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-700 text-white font-extrabold text-xs code-font uppercase tracking-wider hover:opacity-95 shadow-lg shadow-rose-950/60 transition flex items-center justify-center gap-2">
+                        <i data-lucide="lock" class="w-4 h-4"></i>
+                        <span>Authenticate & Access Dashboard</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center text-[10px] text-slate-500 code-font">
+                NEXUS-CORE VAULT SECURITY • ENCRYPTION: ACTIVE
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="/" class="text-xs text-slate-500 hover:text-slate-300 flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Return to Public Storefront
+            </a>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        function fillAdminCredentials() {
+            document.getElementById('admin_email').value = 'admin@vault.internal';
+            document.getElementById('admin_password').value = 'admin_vault_2026!';
+        }
+    </script>
+</body>
+</html>

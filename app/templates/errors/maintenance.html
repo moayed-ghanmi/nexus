@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduled Maintenance // NEXUS KEYS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #07090e; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen bg-[#07090e] text-slate-100 flex items-center justify-center p-6 selection:bg-amber-500 selection:text-black">
+    <div class="max-w-lg w-full bg-slate-900 border border-amber-900/40 rounded-3xl p-8 sm:p-10 text-center space-y-6 shadow-2xl relative overflow-hidden">
+        <!-- Glow accents -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl"></div>
+
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400 animate-pulse">
+            <i data-lucide="wrench" class="w-8 h-8"></i>
+        </div>
+
+        <div>
+            <span class="px-3 py-1 rounded-full bg-amber-950 border border-amber-800 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                System Upgrade In Progress
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-black text-white mt-4">Scheduled Maintenance</h1>
+            <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+                We are performing essential database and security vault optimizations. The storefront will be back online shortly. All pending orders and claimed keys are safe.
+            </p>
+        </div>
+
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-xs space-y-2 text-left code-font">
+            <div class="flex items-center justify-between text-slate-400">
+                <span>Database Engine:</span>
+                <span class="text-emerald-400 font-bold">Encrypted & Secure</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400">
+                <span>Key Dispatch Vault:</span>
+                <span class="text-cyan-400 font-bold">Synchronizing</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400">
+                <span>Est. Completion:</span>
+                <span class="text-amber-400 font-bold">&lt; 15 minutes</span>
+            </div>
+        </div>
+
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onclick="window.location.reload()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-2">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-cyan-400"></i> Check Again
+            </button>
+            <a href="mailto:support@nexuskeys.store" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 font-bold text-xs transition flex items-center justify-center gap-2">
+                <i data-lucide="mail" class="w-3.5 h-3.5"></i> Contact Support
+            </a>
+        </div>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

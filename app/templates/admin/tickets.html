@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPPORT INBOX // ADMIN PORTAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #07090e; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen flex bg-[#07090e] text-slate-100 antialiased selection:bg-rose-500 selection:text-white">
+
+    <!-- Admin Sidebar Navigation -->
+    <aside class="w-64 bg-slate-950 border-r border-slate-800/80 flex flex-col shrink-0">
+        <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-600/30">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <span class="text-sm font-extrabold text-white tracking-wide code-font">NEXUS<span class="text-rose-500">OPS</span></span>
+                    <span class="text-[9px] uppercase tracking-widest text-slate-500 block code-font">Control Center</span>
+                </div>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1.5 text-xs font-semibold">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-2">Core Operations</div>
+            <a href="{{ admin_secret_url }}/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-400"></i>
+                <span>Executive Dashboard</span>
+            </a>
+            <a href="{{ admin_secret_url }}/products" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i>
+                <span>Products &amp; Keys Manager</span>
+            </a>
+            <a href="{{ admin_secret_url }}/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i>
+                <span>Categories</span>
+            </a>
+            <a href="{{ admin_secret_url }}/gateways" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i>
+                <span>Payment Gateways</span>
+            </a>
+            <a href="{{ admin_secret_url }}/tickets" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-cyan-950/40 border border-cyan-900/50 text-cyan-300">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="headphones" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Support Inbox</span>
+                </div>
+                {% if open_count > 0 %}
+                <span class="px-1.5 py-0.2 rounded-full bg-cyan-500 text-black text-[10px] font-black">{{ open_count }}</span>
+                {% endif %}
+            </a>
+            <a href="{{ admin_secret_url }}/coupons" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="ticket" class="w-4 h-4 text-emerald-400"></i>
+                <span>Coupons &amp; Promotions</span>
+            </a>
+            <a href="{{ admin_secret_url }}/reviews" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+                <span>Customer Reviews</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 pt-5 mb-2">Access &amp; Settings</div>
+            <a href="{{ admin_secret_url }}/clients" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+                <span>Clients &amp; Status</span>
+            </a>
+            {% if current_admin.role == 'super_admin' %}
+            <a href="{{ admin_secret_url }}/admins" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i>
+                    <span>Admin Accounts &amp; Roles</span>
+                </div>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 font-mono font-bold">SUPER</span>
+            </a>
+            <a href="{{ admin_secret_url }}/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="settings" class="w-4 h-4 text-blue-400"></i>
+                <span>Store Settings &amp; Branding</span>
+            </a>
+            {% else %}
+            <div class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-600 bg-slate-950/40 border border-slate-900 cursor-not-allowed">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-slate-600"></i>
+                    <span>Admin Accounts</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 text-[9px] text-slate-500 font-bold">LOCKED</span>
+            </div>
+            <div class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-600 bg-slate-950/40 border border-slate-900 cursor-not-allowed">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="settings" class="w-4 h-4 text-slate-600"></i>
+                    <span>Store Settings</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 text-[9px] text-slate-500 font-bold">LOCKED</span>
+            </div>
+            {% endif %}
+        </nav>
+
+        <div class="p-4 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between">
+            <div class="truncate">
+                <p class="text-xs font-bold text-white truncate">{{ current_admin.full_name }}</p>
+                <span class="text-[10px] code-font text-rose-400 font-bold uppercase">{{ current_admin.role }}</span>
+            </div>
+            <a href="{{ admin_secret_url }}/logout" class="p-2 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded-lg text-xs" title="Logout">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 overflow-y-auto p-8 space-y-6">
+
+        <!-- Flash Notices -->
+        {% if success %}
+        <div class="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs flex items-center gap-3">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+            <span>{{ success }}</span>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="p-4 rounded-2xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-3">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 text-[10px] font-bold uppercase tracking-wider">
+                        Customer Service Operations
+                    </span>
+                </div>
+                <h1 class="text-2xl font-black text-white mt-1">Customer Support &amp; Inquiries Inbox</h1>
+                <p class="text-xs text-slate-400">Resolve customer inquiries, key redemption requests, and payment proof validations</p>
+            </div>
+        </div>
+
+        <!-- KPI Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Open Inquiries</span>
+                <span class="text-2xl font-black text-white mt-1 block">{{ open_count }}</span>
+                <span class="text-[10px] text-cyan-400">Awaiting staff response</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Urgent Queue</span>
+                <span class="text-2xl font-black {% if urgent_count > 0 %}text-rose-400 animate-pulse{% else %}text-white{% endif %} mt-1 block">
+                    {{ urgent_count }}
+                </span>
+                <span class="text-[10px] text-slate-400">High priority requests</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Waiting on Client</span>
+                <span class="text-2xl font-black text-amber-400 mt-1 block">{{ waiting_client_count }}</span>
+                <span class="text-[10px] text-slate-400">Staff reply sent</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Resolved Cases</span>
+                <span class="text-2xl font-black text-emerald-400 mt-1 block">{{ resolved_count }}</span>
+                <span class="text-[10px] text-slate-400">Successfully closed</span>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
+            <a href="{{ admin_secret_url }}/tickets?status=all" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition {% if current_status == 'all' %}bg-cyan-500 text-black{% else %}bg-slate-900 text-slate-400 hover:text-white{% endif %}">
+                All Tickets
+            </a>
+            <a href="{{ admin_secret_url }}/tickets?status=open" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition {% if current_status == 'open' %}bg-blue-600 text-white{% else %}bg-slate-900 text-slate-400 hover:text-white{% endif %}">
+                Open ({{ open_count }})
+            </a>
+            <a href="{{ admin_secret_url }}/tickets?status=in_progress" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition {% if current_status == 'in_progress' %}bg-cyan-600 text-white{% else %}bg-slate-900 text-slate-400 hover:text-white{% endif %}">
+                In Progress ({{ in_progress_count }})
+            </a>
+            <a href="{{ admin_secret_url }}/tickets?status=waiting_client" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition {% if current_status == 'waiting_client' %}bg-amber-600 text-black{% else %}bg-slate-900 text-slate-400 hover:text-white{% endif %}">
+                Waiting on Client ({{ waiting_client_count }})
+            </a>
+            <a href="{{ admin_secret_url }}/tickets?status=resolved" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition {% if current_status == 'resolved' %}bg-emerald-600 text-white{% else %}bg-slate-900 text-slate-400 hover:text-white{% endif %}">
+                Resolved
+            </a>
+        </div>
+
+        <!-- Tickets Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-800 bg-slate-950/40 text-slate-400 uppercase tracking-wider font-bold">
+                            <th class="py-3 px-5">Ticket #</th>
+                            <th class="py-3 px-5">Customer</th>
+                            <th class="py-3 px-5">Subject</th>
+                            <th class="py-3 px-5">Linked Order</th>
+                            <th class="py-3 px-5">Priority</th>
+                            <th class="py-3 px-5">Status</th>
+                            <th class="py-3 px-5">Last Activity</th>
+                            <th class="py-3 px-5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-medium">
+                        {% if tickets %}
+                        {% for t in tickets %}
+                        <tr class="hover:bg-slate-950/40 transition">
+                            <td class="py-3.5 px-5 font-mono text-cyan-400 font-bold">
+                                <a href="{{ admin_secret_url }}/tickets/{{ t.id }}" class="hover:underline">
+                                    {{ t.ticket_number }}
+                                </a>
+                            </td>
+                            <td class="py-3.5 px-5">
+                                <div class="font-bold text-white">{{ t.user.full_name }}</div>
+                                <div class="text-[11px] text-slate-400 font-mono">{{ t.user.email }}</div>
+                            </td>
+                            <td class="py-3.5 px-5 max-w-xs">
+                                <span class="font-bold text-white block truncate">{{ t.subject }}</span>
+                                <span class="text-[10px] text-slate-500 uppercase">{{ t.category }} &bull; {{ t.messages|length }} messages</span>
+                            </td>
+                            <td class="py-3.5 px-5">
+                                {% if t.order %}
+                                <a href="{{ admin_secret_url }}/dashboard" class="font-mono text-indigo-400 hover:underline">
+                                    #{{ t.order.order_number }}
+                                </a>
+                                <span class="text-[10px] text-slate-500 block">${{ "%.2f"|format(t.order.total_amount) }}</span>
+                                {% else %}
+                                <span class="text-slate-600">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3.5 px-5">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase
+                                    {% if t.priority == 'urgent' %}bg-rose-950 text-rose-300 border border-rose-800
+                                    {% elif t.priority == 'high' %}bg-amber-950 text-amber-300 border border-amber-800
+                                    {% else %}bg-slate-950 text-slate-400 border border-slate-800{% endif %}">
+                                    {{ t.priority }}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-5">
+                                <select onchange="updateTicketStatus({{ t.id }}, this.value)" class="text-[11px] font-bold uppercase rounded-lg px-2.5 py-1 bg-slate-950 border transition focus:outline-none cursor-pointer
+                                    {% if t.status == 'open' %}text-blue-400 border-blue-800/80
+                                    {% elif t.status == 'in_progress' %}text-cyan-400 border-cyan-800/80
+                                    {% elif t.status == 'waiting_client' %}text-amber-400 border-amber-800/80
+                                    {% elif t.status == 'resolved' %}text-emerald-400 border-emerald-800/80
+                                    {% else %}text-slate-400 border-slate-800{% endif %}">
+                                    <option value="open" {% if t.status == 'open' %}selected{% endif %}>Open</option>
+                                    <option value="in_progress" {% if t.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                    <option value="waiting_client" {% if t.status == 'waiting_client' %}selected{% endif %}>Waiting Client</option>
+                                    <option value="resolved" {% if t.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                                    <option value="closed" {% if t.status == 'closed' %}selected{% endif %}>Closed</option>
+                                </select>
+                            </td>
+                            <td class="py-3.5 px-5 text-slate-400 font-mono text-[11px]">
+                                {{ t.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                            </td>
+                            <td class="py-3.5 px-5 text-right">
+                                <a href="{{ admin_secret_url }}/tickets/{{ t.id }}" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold transition inline-flex items-center gap-1">
+                                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Inspect
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-12 text-slate-500">
+                                No support tickets found matching this filter.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        async function updateTicketStatus(ticketId, newStatus) {
+            try {
+                const formData = new FormData();
+                formData.append('status', newStatus);
+
+                const res = await fetch(`{{ admin_secret_url }}/tickets/${ticketId}/status`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error updating status: ' + data.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error');
+            }
+        }
+    </script>
+</body>
+</html>

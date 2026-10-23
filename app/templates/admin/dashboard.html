@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN CONSOLE // EXECUTIVE OPERATIONS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #07090e;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex bg-[#07090e] text-slate-100 antialiased selection:bg-rose-500 selection:text-white">
+
+    <!-- Admin Sidebar Navigation -->
+    <aside class="w-64 bg-slate-950 border-r border-slate-800/80 flex flex-col shrink-0">
+        <!-- Brand / Secret Badge -->
+        <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-600/30">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <span class="text-sm font-extrabold text-white tracking-wide code-font">NEXUS<span class="text-rose-500">OPS</span></span>
+                    <span class="text-[9px] uppercase tracking-widest text-slate-500 block code-font">Hidden Portal</span>
+                </div>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="System Online"></span>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 p-4 space-y-1.5 text-xs font-semibold">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-2">Core Operations</div>
+            <a href="{{ admin_secret_url }}/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {% if current_admin.role == 'super_admin' %}bg-rose-950/40 border border-rose-900/50 text-rose-300{% else %}bg-cyan-950/40 border border-cyan-900/50 text-cyan-300{% endif %}">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 {% if current_admin.role == 'super_admin' %}text-rose-400{% else %}text-cyan-400{% endif %}"></i>
+                <span>{% if current_admin.role == 'super_admin' %}Executive Dashboard{% else %}Operations Console{% endif %}</span>
+            </a>
+            <a href="{{ admin_secret_url }}/products" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i>
+                <span>Products & Keys Manager</span>
+            </a>
+            <a href="{{ admin_secret_url }}/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i>
+                <span>Categories</span>
+            </a>
+            <a href="{{ admin_secret_url }}/gateways" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i>
+                <span>Payment Gateways</span>
+            </a>
+            <a href="{{ admin_secret_url }}/tickets" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="headphones" class="w-4 h-4 text-cyan-400"></i>
+                <span>Support Inbox</span>
+            </a>
+            <a href="{{ admin_secret_url }}/coupons" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="ticket" class="w-4 h-4 text-emerald-400"></i>
+                <span>Coupons & Promotions</span>
+            </a>
+            <a href="{{ admin_secret_url }}/vouchers" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="gift" class="w-4 h-4 text-teal-400"></i>
+                <span>Gift Vouchers</span>
+            </a>
+            <a href="{{ admin_secret_url }}/reviews" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+                <span>Customer Reviews</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 pt-5 mb-2">Access & Settings</div>
+            <a href="{{ admin_secret_url }}/clients" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+                <span>Clients & Status</span>
+            </a>
+            {% if current_admin.role == 'super_admin' %}
+            <a href="{{ admin_secret_url }}/admins" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i>
+                    <span>Admin Accounts & Roles</span>
+                </div>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 font-mono font-bold">SUPER</span>
+            </a>
+            <a href="{{ admin_secret_url }}/settings" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="settings" class="w-4 h-4 text-blue-400"></i>
+                    <span>Store Settings & Branding</span>
+                </div>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 font-mono font-bold">SUPER</span>
+            </a>
+            {% else %}
+            <div class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-600 bg-slate-950/40 border border-slate-900 cursor-not-allowed" title="Super Administrator clearance required">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-600"></i>
+                    <span>Admin Accounts</span>
+                </div>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-500 font-mono">LOCKED</span>
+            </div>
+            <div class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-600 bg-slate-950/40 border border-slate-900 cursor-not-allowed" title="Super Administrator clearance required">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-600"></i>
+                    <span>Store Settings</span>
+                </div>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-500 font-mono">LOCKED</span>
+            </div>
+            {% endif %}
+        </nav>
+
+        <!-- Admin Profile & Switch back -->
+        <div class="p-4 border-t border-slate-800/80 bg-slate-950/60">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-xl {% if current_admin.role == 'super_admin' %}bg-gradient-to-br from-rose-900/60 to-amber-900/60 border border-amber-600/60 text-amber-300{% else %}bg-cyan-950 border border-cyan-800 text-cyan-300{% endif %} flex items-center justify-center text-xs font-bold shadow-md">
+                    {% if current_admin.role == 'super_admin' %}<i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>{% else %}<i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i>{% endif %}
+                </div>
+                <div class="truncate">
+                    <p class="text-xs font-bold text-white truncate">{{ current_admin.full_name }}</p>
+                    {% if current_admin.role == 'super_admin' %}
+                    <span class="text-[9px] code-font text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> SUPER ADMIN
+                    </span>
+                    {% else %}
+                    <span class="text-[9px] code-font text-cyan-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> OPERATIONS ADMIN
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <a href="/" target="_blank" class="flex-1 py-1.5 px-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-[10px] font-bold text-center transition flex items-center justify-center gap-1">
+                    <i data-lucide="external-link" class="w-3 h-3"></i> View Store
+                </a>
+                <a href="{{ admin_secret_url }}/logout" class="py-1.5 px-2.5 bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 rounded-lg text-[10px] font-bold transition" title="Logout">
+                    <i data-lucide="log-out" class="w-3 h-3"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto">
+        <!-- Top Operational Bar -->
+        <div class="h-16 border-b border-slate-800 px-8 flex items-center justify-between bg-slate-950/40 backdrop-blur-sm sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <span class="text-xs code-font text-slate-400">SECRET GATEWAY:</span>
+                <code class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-xs font-mono text-rose-400 font-bold">
+                    {{ admin_secret_url }}
+                </code>
+                <span class="text-[11px] text-emerald-400 bg-emerald-950/40 border border-emerald-800 px-2 py-0.5 rounded-full font-semibold">
+                    Stealth Obfuscated
+                </span>
+            </div>
+            <div class="text-xs text-slate-400 code-font flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Real-Time Fulfillment Ledger: <span class="text-emerald-400 font-bold">Active</span>
+            </div>
+        </div>
+
+        <div class="p-8 space-y-8 max-w-7xl mx-auto">
+            
+            {% if request.query_params.get('error') == 'super_admin_required' %}
+            <div class="p-4 rounded-2xl bg-rose-950/90 border border-rose-700/80 text-rose-200 text-xs flex items-center justify-between shadow-2xl animate-bounce">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-rose-900/60 border border-rose-600/60 flex items-center justify-center text-rose-300 shrink-0">
+                        <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <strong class="text-white text-sm block">Restricted System Module • Super Administrator Authority Required</strong>
+                        <span>Your account is signed in with standard Operations privileges. Modifying Administrator Accounts, Store Settings &amp; SMTP, or downloading Financial CSVs is strictly restricted to Super Administrators.</span>
+                    </div>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1.5 rounded-lg"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            {% endif %}
+
+            {% if current_admin.role == 'super_admin' %}
+            <!-- SUPER ADMIN: Financial Analytics & Root Executive Control Center -->
+            <div class="bg-gradient-to-r from-slate-900 via-rose-950/30 to-slate-900 border border-rose-900/50 rounded-3xl p-6 flex flex-col xl:flex-row xl:items-center justify-between gap-5 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30 flex items-center gap-1.5 font-mono">
+                            <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400"></i> SUPER ADMIN • ROOT AUTHORITY
+                        </span>
+                        <span class="text-xs text-slate-400">Full Executive Authority &amp; System Configuration</span>
+                    </div>
+                    <h1 class="text-2xl font-black text-white">Financial Analytics &amp; Executive Root Control</h1>
+                    <p class="text-xs text-slate-400 mt-1 max-w-2xl">
+                        Unrestricted authority: wholesale product costs, real-time net profit margins, store settings &amp; branding, payment gateway configuration, administrator accounts manipulation, and executive CSV reports.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 relative z-10">
+                    <a href="{{ admin_secret_url }}/export/orders.csv" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-slate-700 transition flex items-center gap-2 shadow-sm" title="Download Orders CSV">
+                        <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i> Orders CSV
+                    </a>
+                    <a href="{{ admin_secret_url }}/export/inventory.csv" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-slate-700 transition flex items-center gap-2 shadow-sm" title="Download Inventory Keys CSV">
+                        <i data-lucide="key" class="w-3.5 h-3.5 text-cyan-400"></i> Keys CSV
+                    </a>
+                    <a href="{{ admin_secret_url }}/export/clients.csv" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-slate-700 transition flex items-center gap-2 shadow-sm" title="Download Clients CSV">
+                        <i data-lucide="users" class="w-3.5 h-3.5 text-purple-400"></i> Clients CSV
+                    </a>
+                    <button onclick="window.location.reload()" class="px-3.5 py-2 bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 rounded-xl text-xs font-bold border border-rose-800 transition flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-rose-400"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Super Admin Financial KPI Cards -->
+            <div id="financials" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                
+                <!-- Total Gross Revenue -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Gross Revenue</span>
+                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+                            <i data-lucide="dollar-sign" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-white font-mono">${{ "%.2f"|format(stats.total_revenue) }}</div>
+                    <p class="text-[10px] text-cyan-400 mt-1 font-semibold flex items-center gap-1">
+                        <i data-lucide="shopping-bag" class="w-3 h-3"></i> {{ stats.total_orders }} completed orders
+                    </p>
+                </div>
+
+                <!-- Net Profit -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-emerald-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Net Profit</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-emerald-400 font-mono">+${{ "%.2f"|format(stats.total_profit) }}</div>
+                    <p class="text-[10px] text-slate-400 mt-1">
+                        Wholesale Cost: <strong class="text-slate-300">${{ "%.2f"|format(stats.total_cost) }}</strong>
+                    </p>
+                </div>
+
+                <!-- Profit Margin % -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-purple-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Profit Margin</span>
+                        <div class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                            <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-purple-400 font-mono">{{ stats.profit_margin }}%</div>
+                    <p class="text-[10px] text-slate-400 mt-1">AOV: <strong class="text-white">${{ "%.2f"|format(stats.aov) }}</strong></p>
+                </div>
+
+                <!-- Pending Review Orders -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-amber-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending Queue</span>
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-amber-400 font-mono">{{ stats.count_pending }} <span class="text-xs text-slate-500 font-normal">Pending</span></div>
+                    <p class="text-[10px] text-amber-300/80 mt-1">
+                        Awaiting payment clearance
+                    </p>
+                </div>
+
+                <!-- Total Refunds & Cancellations -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-rose-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Refunds &amp; Cancel</span>
+                        <div class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-slate-300 font-mono">{{ stats.count_refunded + stats.count_cancelled }}</div>
+                    <p class="text-[10px] text-slate-400 mt-1">${{ "%.2f"|format(stats.total_refunded_amount) }} returned</p>
+                </div>
+
+                <!-- Active Gateways -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Payment Gateways</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-emerald-400 font-mono">{{ stats.active_gateways }} Active</div>
+                    <p class="text-[10px] text-slate-400 mt-1">D17, Wire, Stripe, PayPal</p>
+                </div>
+            </div>
+
+            <!-- Financial Profit Margin Formula Banner (Super Admin Exclusive) -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center shrink-0">
+                        <i data-lucide="calculator" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">Automated Net Profit Calculation Rule</h4>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            Formula: <code class="text-cyan-300 font-bold">Net Profit = Total Customer Paid - Wholesale Product Cost - Gateway Fee</code>
+                        </p>
+                    </div>
+                </div>
+                <div class="text-xs text-slate-400 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 font-mono">
+                    Gross: <span class="text-white">${{ "%.2f"|format(stats.total_revenue) }}</span> — Cost: <span class="text-slate-400">${{ "%.2f"|format(stats.total_cost) }}</span> = <span class="text-emerald-400 font-bold">+${{ "%.2f"|format(stats.total_profit) }}</span>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- STANDARD ADMIN: Operations & Fulfillment Queue Console -->
+            <div class="bg-gradient-to-r from-slate-900 via-cyan-950/30 to-slate-900 border border-cyan-900/50 rounded-3xl p-6 flex flex-col xl:flex-row xl:items-center justify-between gap-5 shadow-2xl relative overflow-hidden">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold border border-cyan-500/30 flex items-center gap-1.5 font-mono">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5 text-cyan-400"></i> OPERATIONS STAFF • FULFILLMENT CONSOLE
+                        </span>
+                        <span class="text-xs text-slate-400">Order Verification, License Key Allocation &amp; Client Support</span>
+                    </div>
+                    <h1 class="text-2xl font-black text-white">Operations Console &amp; Order Fulfillment</h1>
+                    <p class="text-xs text-slate-400 mt-1 max-w-2xl">
+                        Verify customer payment receipts, approve pending wire transfers, restock digital license pools, modify catalog titles/prices, and assist customer inquiries.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ admin_secret_url }}/dashboard?status=pending" class="px-3.5 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 rounded-xl text-xs font-bold border border-amber-500/30 transition flex items-center gap-2 shadow-sm">
+                        <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> Review Pending ({% raw %}{{ stats.count_pending }}{% endraw %})
+                    </a>
+                    <a href="{{ admin_secret_url }}/products" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-slate-700 transition flex items-center gap-2 shadow-sm">
+                        <i data-lucide="package" class="w-3.5 h-3.5 text-cyan-400"></i> Products &amp; Keys
+                    </a>
+                    <button onclick="window.location.reload()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-cyan-400"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Standard Admin Operational KPI Cards -->
+            <div id="financials" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                
+                <!-- Total Gross Volume -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Gross Volume</span>
+                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+                            <i data-lucide="dollar-sign" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-white font-mono">${{ "%.2f"|format(stats.total_revenue) }}</div>
+                    <p class="text-[10px] text-cyan-400 mt-1 font-semibold flex items-center gap-1">
+                        <i data-lucide="shopping-bag" class="w-3 h-3"></i> {{ stats.total_orders }} orders processed
+                    </p>
+                </div>
+
+                <!-- Pending Slip Verification Queue (Critical Action for Staff) -->
+                <div class="bg-slate-900/90 border {% if stats.count_pending > 0 %}border-amber-500/70 shadow-lg shadow-amber-500/10 animate-pulse{% else %}border-slate-800/80{% endif %} rounded-2xl p-4 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Receipt Verification</span>
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-amber-400 font-mono">{{ stats.count_pending }} <span class="text-xs text-amber-300 font-normal">Awaiting Review</span></div>
+                    <p class="text-[10px] text-slate-400 mt-1">
+                        Verify uploaded D17 / Wire slips
+                    </p>
+                </div>
+
+                <!-- Completed Deliveries -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-emerald-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Fulfilled Orders</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-emerald-400 font-mono">{{ stats.count_completed }} Orders</div>
+                    <p class="text-[10px] text-slate-400 mt-1">Keys revealed &amp; emailed</p>
+                </div>
+
+                <!-- Available Keys in Inventory -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-cyan-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Available Stock</span>
+                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+                            <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-cyan-400 font-mono">{{ stats.available_keys }} Keys</div>
+                    <p class="text-[10px] text-slate-400 mt-1">{{ stats.sold_keys }} keys redeemed total</p>
+                </div>
+
+                <!-- Low Stock Alerts -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-rose-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Low Stock Warnings</span>
+                        <div class="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
+                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-rose-400 font-mono">{{ low_stock_products|length }} Items</div>
+                    <p class="text-[10px] text-slate-400 mt-1">Needs key pool replenishment</p>
+                </div>
+
+                <!-- Active Registered Clients -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 hover:border-purple-500/50 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Client Accounts</span>
+                        <div class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-purple-400 font-mono">{{ stats.total_clients }} Users</div>
+                    <p class="text-[10px] text-slate-400 mt-1">Active customer profiles</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Low Stock Inventory Health Alert (If any) -->
+            {% if low_stock_products and low_stock_products|length > 0 %}
+            <div id="inventory" class="bg-amber-950/30 border border-amber-800/60 rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Inventory Health Alert: Low Key Stock</h3>
+                            <p class="text-xs text-slate-400">The following products have 2 or fewer license keys left in the database pool</p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full bg-amber-950 border border-amber-800 text-amber-300 text-xs font-bold">
+                        {{ low_stock_products|length }} Item(s) Need Restock
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                    {% for p in low_stock_products %}
+                    <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-white truncate max-w-[180px]">{{ p.title }}</div>
+                            <span class="text-[10px] text-slate-500 uppercase">{{ p.platform }}</span>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg bg-amber-900/40 text-amber-300 font-mono font-bold text-[11px]">
+                            {{ p.available_keys_count }} left
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Live Orders Real-Time Ledger -->
+            <div id="orders" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-black text-white flex items-center gap-2">
+                            <i data-lucide="receipt" class="w-5 h-5 text-cyan-400"></i>
+                            <span>Live Orders & Key Delivery Ledger</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Real-time inspection of orders, status transitions, key restock controls, and profit margins</p>
+                    </div>
+                    <span class="text-xs text-slate-400 font-mono">{{ recent_orders|length }} Orders in View</span>
+                </div>
+
+                <!-- Status Filter Navigation Tabs -->
+                <div class="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
+                    <a href="{{ admin_secret_url }}/dashboard?status=all#orders" 
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 {% if status_filter == 'all' %}bg-rose-950 text-rose-300 border border-rose-800{% else %}bg-slate-950 text-slate-400 hover:text-white border border-slate-800{% endif %}">
+                        <span>All Orders</span>
+                        <span class="px-1.5 py-0.5 rounded-md bg-slate-900 font-mono text-[10px]">{{ stats.count_all }}</span>
+                    </a>
+                    <a href="{{ admin_secret_url }}/dashboard?status=completed#orders" 
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 {% if status_filter == 'completed' %}bg-emerald-950 text-emerald-300 border border-emerald-800{% else %}bg-slate-950 text-slate-400 hover:text-emerald-300 border border-slate-800{% endif %}">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span>Completed</span>
+                        <span class="px-1.5 py-0.5 rounded-md bg-slate-900 font-mono text-[10px] text-emerald-400">{{ stats.count_completed }}</span>
+                    </a>
+                    <a href="{{ admin_secret_url }}/dashboard?status=pending#orders" 
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 {% if status_filter == 'pending' %}bg-amber-950 text-amber-300 border border-amber-800{% else %}bg-slate-950 text-slate-400 hover:text-amber-300 border border-slate-800{% endif %}">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span>Pending</span>
+                        <span class="px-1.5 py-0.5 rounded-md bg-slate-900 font-mono text-[10px] text-amber-400">{{ stats.count_pending }}</span>
+                    </a>
+                    <a href="{{ admin_secret_url }}/dashboard?status=refunded#orders" 
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 {% if status_filter == 'refunded' %}bg-purple-950 text-purple-300 border border-purple-800{% else %}bg-slate-950 text-slate-400 hover:text-purple-300 border border-slate-800{% endif %}">
+                        <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                        <span>Refunded</span>
+                        <span class="px-1.5 py-0.5 rounded-md bg-slate-900 font-mono text-[10px] text-purple-400">{{ stats.count_refunded }}</span>
+                    </a>
+                    <a href="{{ admin_secret_url }}/dashboard?status=cancelled#orders" 
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 {% if status_filter == 'cancelled' %}bg-rose-950 text-rose-300 border border-rose-800{% else %}bg-slate-950 text-slate-400 hover:text-rose-300 border border-slate-800{% endif %}">
+                        <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                        <span>Cancelled</span>
+                        <span class="px-1.5 py-0.5 rounded-md bg-slate-900 font-mono text-[10px] text-rose-400">{{ stats.count_cancelled }}</span>
+                    </a>
+                </div>
+
+                {% if recent_orders and recent_orders|length > 0 %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider font-bold">
+                                <th class="pb-3">Order Number</th>
+                                <th class="pb-3">Customer</th>
+                                <th class="pb-3">Date</th>
+                                <th class="pb-3">Total Paid</th>
+                                <th class="pb-3">Wholesale Cost</th>
+                                <th class="pb-3">Net Profit</th>
+                                <th class="pb-3">Method</th>
+                                <th class="pb-3">Status Control</th>
+                                <th class="pb-3 text-right">Inspect Keys</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-medium">
+                            {% for o in recent_orders %}
+                            <tr id="order-row-{{ o.id }}" class="hover:bg-slate-950/40 transition">
+                                <td class="py-3.5 font-mono font-bold text-cyan-400">{{ o.order_number }}</td>
+                                <td class="py-3.5">
+                                    <div class="font-bold text-white">{{ o.user.full_name }}</div>
+                                    <div class="text-[10px] text-slate-500 font-mono">{{ o.user.email }}</div>
+                                </td>
+                                <td class="py-3.5 text-slate-400 font-mono">{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td class="py-3.5 font-bold text-white font-mono">${{ "%.2f"|format(o.total_amount) }}</td>
+                                <td class="py-3.5 text-slate-400 font-mono">${{ "%.2f"|format(o.total_cost) }}</td>
+                                <td class="py-3.5 font-mono" id="row-profit-{{ o.id }}">
+                                    {% if o.status == 'completed' %}
+                                    <span class="font-bold text-emerald-400">+${{ "%.2f"|format(o.profit) }}</span>
+                                    {% else %}
+                                    <span class="text-slate-500">$0.00</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3.5 text-slate-300">{{ o.payment_method }}</td>
+                                <td class="py-3.5">
+                                    <!-- In-line Quick Status Selector -->
+                                    <select 
+                                        id="row-status-select-{{ o.id }}"
+                                        onchange="quickChangeOrderStatus({{ o.id }}, this.value)" 
+                                        class="text-[11px] font-bold uppercase rounded-lg px-2.5 py-1 bg-slate-950 border transition focus:outline-none cursor-pointer
+                                        {% if o.status == 'completed' %}text-emerald-400 border-emerald-800/80 bg-emerald-950/30
+                                        {% elif o.status == 'pending' %}text-amber-400 border-amber-800/80 bg-amber-950/30
+                                        {% elif o.status == 'refunded' %}text-purple-400 border-purple-800/80 bg-purple-950/30
+                                        {% else %}text-rose-400 border-rose-800/80 bg-rose-950/30{% endif %}">
+                                        <option value="completed" {% if o.status == 'completed' %}selected{% endif %}>Completed</option>
+                                        <option value="pending" {% if o.status == 'pending' %}selected{% endif %}>Pending</option>
+                                        <option value="refunded" {% if o.status == 'refunded' %}selected{% endif %}>Refunded</option>
+                                        <option value="cancelled" {% if o.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                </td>
+                                <td class="py-3.5 text-right">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a 
+                                            href="{{ admin_secret_url }}/order/{{ o.id }}/invoice" 
+                                            target="_blank" 
+                                            title="Download Official PDF Invoice"
+                                            class="px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 text-xs font-semibold transition inline-flex items-center gap-1 border border-slate-700/60">
+                                            <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400"></i> PDF
+                                        </a>
+                                        <button 
+                                            onclick="inspectOrder({{ o.id }})"
+                                            class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold transition inline-flex items-center gap-1">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Inspect
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-12 border border-dashed border-slate-800 rounded-2xl">
+                    <p class="text-xs text-slate-400">No orders found matching the filter '<strong>{{ status_filter }}</strong>'.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Products Catalog Snapshot -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h3 class="text-sm font-black text-white">Digital Product Catalog & Stock Snapshot</h3>
+                        <p class="text-xs text-slate-400">Live products seeded in SQLite ready for client catalog browsing</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider font-bold">
+                                <th class="pb-3">Product Name</th>
+                                <th class="pb-3">Category</th>
+                                <th class="pb-3">Platform</th>
+                                <th class="pb-3">Customer Price</th>
+                                <th class="pb-3">Wholesale Cost</th>
+                                <th class="pb-3">Est. Profit</th>
+                                <th class="pb-3 text-right">Available Keys</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-medium">
+                            {% for p in products %}
+                            <tr class="hover:bg-slate-950/40 transition">
+                                <td class="py-3 font-bold text-white flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full {% if p.available_keys_count > 0 %}bg-cyan-400{% else %}bg-rose-500{% endif %}"></span>
+                                    {{ p.title }}
+                                </td>
+                                <td class="py-3 text-slate-400">{{ p.category.name }}</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-mono text-[10px]">{{ p.platform }}</span>
+                                </td>
+                                <td class="py-3 font-bold text-cyan-400">${{ "%.2f"|format(p.price) }}</td>
+                                <td class="py-3 text-slate-400">${{ "%.2f"|format(p.cost_price) }}</td>
+                                <td class="py-3 font-bold text-emerald-400">+${{ "%.2f"|format(p.price - p.cost_price) }}</td>
+                                <td class="py-3 text-right">
+                                    <span class="px-2.5 py-1 rounded-full {% if p.available_keys_count > 0 %}bg-emerald-950 border border-emerald-800 text-emerald-400{% else %}bg-rose-950 border border-rose-800 text-rose-400{% endif %} font-mono font-bold">
+                                        {{ p.available_keys_count }} in stock
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Order Inspection Modal -->
+    <div id="order-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-[10px] font-bold text-rose-400 uppercase tracking-widest code-font">Order Inspection</span>
+                    <h3 class="text-base font-black text-white" id="modal-order-number">ORD-...</h3>
+                </div>
+                <button onclick="closeModal()" class="p-2 text-slate-400 hover:text-white rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="modal-content" class="space-y-4 text-xs">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Admin Toast Container -->
+    <div id="admin-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 border border-slate-700 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
+            <div id="admin-toast-icon" class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <i data-lucide="check" class="w-4 h-4"></i>
+            </div>
+            <div>
+                <h5 id="admin-toast-title" class="text-xs font-bold text-white">Status Updated</h5>
+                <p id="admin-toast-msg" class="text-[11px] text-slate-400">Order changes saved successfully.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let currentInspectedOrderId = null;
+
+        function showAdminToast(title, message, isError = false) {
+            const toast = document.getElementById('admin-toast');
+            const titleEl = document.getElementById('admin-toast-title');
+            const msgEl = document.getElementById('admin-toast-msg');
+            const iconEl = document.getElementById('admin-toast-icon');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
+            if (isError) {
+                iconEl.className = "w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0";
+                iconEl.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i>`;
+            } else {
+                iconEl.className = "w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0";
+                iconEl.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i>`;
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        async function quickChangeOrderStatus(orderId, newStatus) {
+            const formData = new FormData();
+            formData.append("new_status", newStatus);
+            formData.append("restock_keys", "true");
+
+            try {
+                const resp = await fetch(`{{ admin_secret_url }}/order/${orderId}/status`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await resp.json();
+
+                if (data.success) {
+                    showAdminToast("Status Changed", data.message);
+                    // Update row profit display
+                    const profitCell = document.getElementById(`row-profit-${orderId}`);
+                    if (profitCell) {
+                        if (newStatus === 'completed') {
+                            profitCell.innerHTML = `<span class="font-bold text-emerald-400">+$${data.order.profit.toFixed(2)}</span>`;
+                        } else {
+                            profitCell.innerHTML = `<span class="text-slate-500">$0.00</span>`;
+                        }
+                    }
+                    // Update select color classes
+                    const sel = document.getElementById(`row-status-select-${orderId}`);
+                    if (sel) {
+                        sel.className = `text-[11px] font-bold uppercase rounded-lg px-2.5 py-1 bg-slate-950 border transition focus:outline-none cursor-pointer ` + 
+                            (newStatus === 'completed' ? 'text-emerald-400 border-emerald-800/80 bg-emerald-950/30' :
+                             newStatus === 'pending' ? 'text-amber-400 border-amber-800/80 bg-amber-950/30' :
+                             newStatus === 'refunded' ? 'text-purple-400 border-purple-800/80 bg-purple-950/30' :
+                             'text-rose-400 border-rose-800/80 bg-rose-950/30');
+                    }
+                } else {
+                    showAdminToast("Action Failed", data.error || "Unable to change status", true);
+                }
+            } catch (err) {
+                showAdminToast("Network Error", "Failed to communicate with server.", true);
+            }
+        }
+
+        async function inspectOrder(orderId) {
+            currentInspectedOrderId = orderId;
+            const modal = document.getElementById('order-modal');
+            const titleEl = document.getElementById('modal-order-number');
+            const contentEl = document.getElementById('modal-content');
+
+            contentEl.innerHTML = `<div class="text-center py-8 text-slate-500">Loading order fulfillment details...</div>`;
+            modal.classList.remove('hidden');
+
+            try {
+                const resp = await fetch(`{{ admin_secret_url }}/order/${orderId}`);
+                const data = await resp.json();
+
+                if (!data.success) {
+                    contentEl.innerHTML = `<div class="text-rose-400">Error: ${data.error}</div>`;
+                    return;
+                }
+
+                const ord = data.order;
+                titleEl.innerText = `${ord.order_number}`;
+
+                const statusStyles = {
+                    completed: 'bg-emerald-950 text-emerald-300 border border-emerald-800',
+                    pending: 'bg-amber-950 text-amber-300 border border-amber-800 animate-pulse',
+                    refunded: 'bg-purple-950 text-purple-300 border border-purple-800',
+                    cancelled: 'bg-rose-950 text-rose-300 border border-rose-800'
+                };
+                const currentBadgeClass = statusStyles[ord.status] || 'bg-slate-800 text-white';
+
+                contentEl.innerHTML = `
+                    <!-- Customer & Financial Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div>
+                            <span class="text-slate-500 block text-[10px] uppercase font-bold">Customer Account</span>
+                            <span class="font-bold text-white text-sm">${ord.customer_name}</span>
+                            <span class="text-slate-400 block text-[11px] font-mono">${ord.customer_email}</span>
+                            <span class="text-slate-500 text-[10px] block mt-1">${ord.created_at}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-[10px] uppercase font-bold">Financial Accounting</span>
+                            <span class="text-white font-bold">${ord.payment_method}</span>
+                            <div class="mt-1 font-mono text-[11px] space-y-0.5">
+                                <div>Gross Paid: <strong class="text-cyan-400">$${ord.total_amount.toFixed(2)}</strong></div>
+                                {% if current_admin.role == 'super_admin' %}
+                                <div>Wholesale Cost: <strong class="text-slate-400">$${ord.total_cost.toFixed(2)}</strong></div>
+                                <div>Net Profit: <strong class="${ord.status === 'completed' ? 'text-emerald-400' : 'text-slate-500'}">+$${ord.profit.toFixed(2)}</strong></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client Payment Proof & Receipt Verification -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="file-check" class="w-4 h-4 text-emerald-400"></i> Client Payment Proof & Receipt
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <a 
+                                    href="{{ admin_secret_url }}/order/${ord.id}/invoice" 
+                                    target="_blank" 
+                                    class="px-3 py-1 rounded-lg bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-800 text-emerald-300 text-xs font-bold transition flex items-center gap-1.5">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                    <span>Download PDF Invoice</span>
+                                </a>
+                                <button 
+                                    type="button" 
+                                    onclick="sendReceiptEmailModal(${ord.id})" 
+                                    class="px-3 py-1 rounded-lg bg-blue-950/60 hover:bg-blue-900 border border-blue-800 text-blue-300 text-xs font-bold transition flex items-center gap-1.5">
+                                    <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                                    <span>Send Email Receipt</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        ${ord.receipt_file_url ? `
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-slate-900/80 rounded-xl border border-emerald-900/40">
+                                <div class="flex items-center gap-3">
+                                    ${ord.receipt_file_url.toLowerCase().endsWith('.pdf') ? `
+                                        <div class="w-12 h-12 rounded-lg bg-red-950/60 border border-red-800 flex items-center justify-center text-red-400">
+                                            <i data-lucide="file-text" class="w-6 h-6"></i>
+                                        </div>
+                                    ` : `
+                                        <a href="${ord.receipt_file_url}" target="_blank" class="block w-14 h-14 rounded-lg bg-slate-950 overflow-hidden border border-slate-700 hover:border-emerald-500 transition shrink-0">
+                                            <img src="${ord.receipt_file_url}" alt="Receipt" class="w-full h-full object-cover">
+                                        </a>
+                                    `}
+                                    <div>
+                                        <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                            <span>Uploaded Proof of Payment</span>
+                                            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[9px] font-bold uppercase">Attached</span>
+                                        </div>
+                                        <a href="${ord.receipt_file_url}" target="_blank" class="text-[11px] text-cyan-400 hover:underline flex items-center gap-1 mt-0.5">
+                                            <i data-lucide="external-link" class="w-3 h-3"></i> View Full Original Receipt
+                                        </a>
+                                    </div>
+                                </div>
+                                <a href="${ord.receipt_file_url}" download class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center gap-1">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i> Download
+                                </a>
+                            </div>
+                        ` : `
+                            <div class="p-3 bg-slate-900/40 rounded-xl border border-dashed border-slate-800 text-xs text-slate-500 flex items-center gap-2">
+                                <i data-lucide="alert-circle" class="w-4 h-4 text-slate-600"></i>
+                                <span>No payment receipt file attached yet by the client.</span>
+                            </div>
+                        `}
+
+                        ${ord.client_notes ? `
+                            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs">
+                                <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Client Transaction Notes / Sender Info:</span>
+                                <div class="text-white font-mono text-[11px] bg-slate-950 p-2 rounded-lg border border-slate-800/80">${ord.client_notes}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Order Status Management Box -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i> Order Status Controls
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full font-bold uppercase text-[10px] ${currentBadgeClass}">
+                                Current: ${ord.status}
+                            </span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                            <button 
+                                type="button"
+                                onclick="applyOrderStatusModal(${ord.id}, 'completed')"
+                                class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${ord.status === 'completed' ? 'bg-emerald-600 text-white' : 'bg-emerald-950 hover:bg-emerald-900 border border-emerald-800 text-emerald-300'}">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Mark Completed
+                            </button>
+                            <button 
+                                type="button"
+                                onclick="applyOrderStatusModal(${ord.id}, 'pending')"
+                                class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${ord.status === 'pending' ? 'bg-amber-600 text-white' : 'bg-amber-950 hover:bg-amber-900 border border-amber-800 text-amber-300'}">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i> Mark Pending
+                            </button>
+                            <button 
+                                type="button"
+                                onclick="applyOrderStatusModal(${ord.id}, 'refunded')"
+                                class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${ord.status === 'refunded' ? 'bg-purple-600 text-white' : 'bg-purple-950 hover:bg-purple-900 border border-purple-800 text-purple-300'}">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Refund Order
+                            </button>
+                            <button 
+                                type="button"
+                                onclick="applyOrderStatusModal(${ord.id}, 'cancelled')"
+                                class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${ord.status === 'cancelled' ? 'bg-rose-600 text-white' : 'bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300'}">
+                                <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Cancel Order
+                            </button>
+                        </div>
+
+                        <!-- Restock Keys Checkbox -->
+                        <label class="flex items-center gap-2 pt-1 text-[11px] text-slate-400 cursor-pointer select-none">
+                            <input type="checkbox" id="modal-restock-keys" checked class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-rose-600 focus:ring-0">
+                            <span>Release & Restock digital license keys back to inventory on Cancel or Refund</span>
+                        </label>
+                    </div>
+
+                    <!-- Digital Keys Allocation -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-white uppercase text-[11px] tracking-wider flex items-center justify-between">
+                            <span>Delivered / Assigned License Keys:</span>
+                            <span class="text-slate-400 font-mono text-[10px]">${ord.assigned_keys_count} key(s) linked</span>
+                        </h4>
+                        ${ord.items.map(item => `
+                            <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-cyan-300">${item.product_title} (${item.platform})</span>
+                                    <span class="text-slate-400 font-mono">Qty: ${item.quantity}</span>
+                                </div>
+                                <div class="space-y-1.5">
+                                    ${item.keys && item.keys.length > 0 ? item.keys.map(k => `
+                                        <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 font-mono text-emerald-400 font-bold text-xs select-all flex items-center justify-between">
+                                            <span>${k}</span>
+                                            <span class="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400">Assigned</span>
+                                        </div>
+                                    `).join('') : `
+                                        <div class="p-2 bg-slate-900/60 rounded-lg border border-dashed border-slate-800 text-slate-500 text-[11px] italic">
+                                            No keys active (Keys held, restocked, or awaiting payment completion)
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                lucide.createIcons();
+            } catch (err) {
+                contentEl.innerHTML = `<div class="text-rose-400">Failed to load order inspection.</div>`;
+            }
+        }
+
+        async function applyOrderStatusModal(orderId, newStatus) {
+            const restockChecked = document.getElementById('modal-restock-keys') ? document.getElementById('modal-restock-keys').checked : true;
+            const formData = new FormData();
+            formData.append("new_status", newStatus);
+            formData.append("restock_keys", restockChecked ? "true" : "false");
+
+            try {
+                const resp = await fetch(`{{ admin_secret_url }}/order/${orderId}/status`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await resp.json();
+
+                if (data.success) {
+                    showAdminToast("Status Updated", data.message);
+                    // Re-render modal to reflect new state
+                    await inspectOrder(orderId);
+                    // Update table row in background
+                    const sel = document.getElementById(`row-status-select-${orderId}`);
+                    if (sel) {
+                        sel.value = newStatus;
+                        sel.className = `text-[11px] font-bold uppercase rounded-lg px-2.5 py-1 bg-slate-950 border transition focus:outline-none cursor-pointer ` + 
+                            (newStatus === 'completed' ? 'text-emerald-400 border-emerald-800/80 bg-emerald-950/30' :
+                             newStatus === 'pending' ? 'text-amber-400 border-amber-800/80 bg-amber-950/30' :
+                             newStatus === 'refunded' ? 'text-purple-400 border-purple-800/80 bg-purple-950/30' :
+                             'text-rose-400 border-rose-800/80 bg-rose-950/30');
+                    }
+                    const profitCell = document.getElementById(`row-profit-${orderId}`);
+                    if (profitCell) {
+                        if (newStatus === 'completed') {
+                            profitCell.innerHTML = `<span class="font-bold text-emerald-400">+$${data.order.profit.toFixed(2)}</span>`;
+                        } else {
+                            profitCell.innerHTML = `<span class="text-slate-500">$0.00</span>`;
+                        }
+                    }
+                } else {
+                    showAdminToast("Update Failed", data.error || "Unable to update status", true);
+                }
+            } catch (err) {
+                showAdminToast("Error", "Failed to update order status.", true);
+            }
+        }
+
+        async function sendReceiptEmailModal(orderId) {
+            try {
+                showAdminToast("Dispatching Email", "Sending official receipt and keys to customer email...");
+                const resp = await fetch(`{{ admin_secret_url }}/order/${orderId}/send-receipt-email`, {
+                    method: 'POST'
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showAdminToast("Email Dispatched", `Receipt successfully sent to ${data.recipient}.`);
+                } else {
+                    showAdminToast("Email Notice", data.error || "Could not dispatch email.", true);
+                }
+            } catch (err) {
+                showAdminToast("Error", "Failed to communicate with email service.", true);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

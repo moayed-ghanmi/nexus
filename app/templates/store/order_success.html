@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmed & Digital Keys | NEXUS KEYS{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+
+    <!-- Dynamic Status Header Banner -->
+    {% if order.status == 'completed' %}
+    <div class="bg-gradient-to-r from-slate-900 via-emerald-950/40 to-slate-900 border border-emerald-900/60 rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto mb-4 text-emerald-400">
+            <i data-lucide="check" class="w-8 h-8"></i>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+            Payment Verified • Instant Delivery Completed
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-black text-white mt-3">Your Digital Keys Are Ready!</h1>
+        <p class="text-xs sm:text-sm text-slate-300 mt-2 max-w-lg mx-auto">
+            Order <strong class="text-cyan-400 font-mono">{{ order.order_number }}</strong> has been fulfilled. Your genuine digital activation codes have been claimed from inventory and saved to your permanent vault.
+        </p>
+
+        <!-- Automated Receipt Email Dispatch Notice -->
+        <div class="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-700/80 text-emerald-300 text-xs font-medium shadow-inner">
+            <i data-lucide="mail-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+            <span>Receipt &amp; digital license keys sent automatically to <strong class="text-white font-mono">{{ order.user.email if order.user else 'your email' }}</strong></span>
+        </div>
+
+        <!-- Order Meta Pills -->
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Method: <span class="text-white font-bold">{{ order.payment_method }}</span>
+            </div>
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Total Paid: <span class="text-cyan-400 font-bold">${{ "%.2f"|format(order.total_amount) }}</span>
+            </div>
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Status: <span class="text-emerald-400 font-bold uppercase">{{ order.status }}</span>
+            </div>
+        </div>
+    </div>
+    {% elif order.status == 'pending' %}
+    <div class="bg-gradient-to-r from-slate-900 via-amber-950/40 to-slate-900 border border-amber-900/60 rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl">
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center mx-auto mb-4 text-amber-400 animate-pulse">
+            <i data-lucide="clock" class="w-8 h-8"></i>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-amber-950 border border-amber-800 text-amber-400 text-xs font-bold uppercase tracking-wider">
+            Payment Verification In Progress
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-black text-white mt-3">Order Recorded • Awaiting Verification</h1>
+        <p class="text-xs sm:text-sm text-slate-300 mt-2 max-w-lg mx-auto">
+            Order <strong class="text-amber-400 font-mono">{{ order.order_number }}</strong> is pending payment clearance. Your digital license keys are safely reserved and will unlock automatically once our team verifies your transfer.
+        </p>
+
+        <!-- Order Meta Pills -->
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Method: <span class="text-white font-bold">{{ order.payment_method }}</span>
+            </div>
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Total Due: <span class="text-amber-400 font-bold">${{ "%.2f"|format(order.total_amount) }}</span>
+            </div>
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Status: <span class="text-amber-400 font-bold uppercase">{{ order.status }}</span>
+            </div>
+        </div>
+    </div>
+    {% elif order.status == 'refunded' %}
+    <div class="bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border border-purple-900/60 rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl">
+        <div class="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center mx-auto mb-4 text-purple-400">
+            <i data-lucide="rotate-ccw" class="w-8 h-8"></i>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-purple-950 border border-purple-800 text-purple-400 text-xs font-bold uppercase tracking-wider">
+            Order Refund Completed
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-black text-white mt-3">Order Refunded</h1>
+        <p class="text-xs sm:text-sm text-slate-300 mt-2 max-w-lg mx-auto">
+            Order <strong class="text-purple-400 font-mono">{{ order.order_number }}</strong> has been fully refunded. Associated digital activation keys have been revoked.
+        </p>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Refunded Amount: <span class="text-purple-400 font-bold">${{ "%.2f"|format(order.total_amount) }}</span>
+            </div>
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Status: <span class="text-purple-400 font-bold uppercase">{{ order.status }}</span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-gradient-to-r from-slate-900 via-rose-950/40 to-slate-900 border border-rose-900/60 rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl">
+        <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center mx-auto mb-4 text-rose-400">
+            <i data-lucide="x-circle" class="w-8 h-8"></i>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-rose-950 border border-rose-800 text-rose-400 text-xs font-bold uppercase tracking-wider">
+            Order Cancelled
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-black text-white mt-3">Order Cancelled</h1>
+        <p class="text-xs sm:text-sm text-slate-300 mt-2 max-w-lg mx-auto">
+            Order <strong class="text-rose-400 font-mono">{{ order.order_number }}</strong> was cancelled. No license keys were released.
+        </p>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                Status: <span class="text-rose-400 font-bold uppercase">{{ order.status }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- The Digital Keys Revelation Vault (Only displayed if order is COMPLETED) -->
+    {% if order.status == 'completed' %}
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <i data-lucide="key" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-white">Delivered Digital License Keys</h2>
+                    <p class="text-xs text-slate-400">Copy your keys below to activate on your respective platform</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a 
+                    href="/order/{{ order.order_number }}/invoice?download=1" 
+                    target="_blank"
+                    class="flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border border-cyan-400/30 px-3.5 py-1.5 rounded-xl shadow-lg shadow-cyan-950/40 transition">
+                    <i data-lucide="download" class="w-4 h-4"></i> Download PDF Invoice
+                </a>
+                <button 
+                    onclick="window.print()" 
+                    class="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl transition">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Print Receipt
+                </button>
+            </div>
+        </div>
+
+        <!-- Items & Key Blocks -->
+        <div class="space-y-6">
+            {% for item in order.items %}
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-900 pb-3">
+                    <div>
+                        <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">{{ item.product.platform }} • {{ item.product.region }}</span>
+                        <h3 class="text-sm font-bold text-white">{{ item.product.title }}</h3>
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">Qty: {{ item.quantity }}</span>
+                </div>
+
+                <!-- Display Delivered Keys -->
+                <div class="space-y-3">
+                    {% for key in order.assigned_keys %}
+                        {% if key.product_id == item.product_id %}
+                        <div class="p-3.5 rounded-xl bg-slate-900 border border-cyan-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <span class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold flex items-center justify-center shrink-0">
+                                    {{ loop.index }}
+                                </span>
+                                <div>
+                                    <span class="text-[10px] text-slate-500 uppercase tracking-wider block">Activation Code / Key</span>
+                                    <code id="key-code-{{ key.id }}" class="text-sm sm:text-base font-mono font-bold text-emerald-400 tracking-wider select-all">
+                                        {{ key.key_code }}
+                                    </code>
+                                </div>
+                            </div>
+                            <button 
+                                type="button" 
+                                onclick="copyKey('key-code-{{ key.id }}', this)"
+                                class="px-4 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 self-start sm:self-auto">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy Key</span>
+                            </button>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% elif order.status == 'pending' %}
+    <!-- Pending Payment Instructions & Receipt Upload Container -->
+    <div class="space-y-6">
+        
+        <!-- Instructions Card -->
+        <div class="bg-slate-900 border border-amber-900/40 rounded-3xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Payment Instructions for {{ order.payment_method }}</h3>
+                    <p class="text-xs text-slate-400">Please send the exact amount and upload your payment receipt below for instant release</p>
+                </div>
+            </div>
+
+            {% if 'd17' in order.payment_method.lower() %}
+            <!-- D17 / Flouci Instructions -->
+            <div class="bg-amber-950/20 border border-amber-900/50 rounded-2xl p-5 space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold uppercase">
+                        D17 Mobile Transfer
+                    </span>
+                    <span class="text-xs text-slate-400">Poste Tunisienne / Flouci Mobile Wallet</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-[10px] uppercase font-mono text-slate-400 block mb-1">D17 Phone Number</span>
+                        <div class="flex items-center justify-between">
+                            <code id="d17-phone" class="text-sm font-mono font-bold text-amber-400">+216 98 765 432</code>
+                            <button type="button" onclick="copySnippet('+216 98 765 432', this)" class="text-xs text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Transfer Reference</span>
+                        <div class="flex items-center justify-between">
+                            <code class="text-sm font-mono font-bold text-white">{{ order.order_number }}</code>
+                            <button type="button" onclick="copySnippet('{{ order.order_number }}', this)" class="text-xs text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Amount Due</span>
+                        <span class="text-base font-mono font-bold text-amber-400">${{ "%.2f"|format(order.total_amount) }}</span>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-300">
+                    Open your <strong>D17 app</strong> &rarr; Select <em>"Transfert d'argent"</em> &rarr; Enter phone <strong class="text-amber-400 font-mono">+216 98 765 432</strong> &rarr; Set transaction description to <strong class="text-white font-mono">{{ order.order_number }}</strong>. Take a screenshot of the confirmation screen and upload it below.
+                </p>
+            </div>
+            {% elif 'bank' in order.payment_method.lower() %}
+            <!-- Bank Wire Transfer Instructions -->
+            <div class="bg-amber-950/20 border border-amber-900/50 rounded-2xl p-5 space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold uppercase">
+                        Direct Bank Wire / Virement
+                    </span>
+                    <span class="text-xs text-slate-400">Banque de Tunisie / SEPA Transfer</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 md:col-span-2">
+                        <span class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Bank R.I.B Account Number</span>
+                        <div class="flex items-center justify-between">
+                            <code class="text-sm sm:text-base font-mono font-bold text-amber-400 tracking-wider">08 015 00011122233344 55</code>
+                            <button type="button" onclick="copySnippet('08 015 00011122233344 55', this)" class="text-xs text-slate-400 hover:text-white p-1.5 rounded hover:bg-slate-800 flex items-center gap-1 font-mono">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy R.I.B
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Beneficiary Name</span>
+                        <span class="text-sm font-bold text-white">NEXUS DIGITAL CORP</span>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Wire Motif / Reference</span>
+                        <div class="flex items-center justify-between">
+                            <code class="text-sm font-mono font-bold text-white">{{ order.order_number }}</code>
+                            <button type="button" onclick="copySnippet('{{ order.order_number }}', this)" class="text-xs text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-300">
+                    Transfer <strong class="text-amber-400 font-mono">${{ "%.2f"|format(order.total_amount) }}</strong> to the R.I.B above. Always specify <strong class="text-white font-mono">{{ order.order_number }}</strong> in the wire motif so our automated clearing engine matches your payment immediately.
+                </p>
+            </div>
+            {% else %}
+            <!-- Generic Pending Instructions -->
+            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 text-xs text-slate-300">
+                <p>
+                    You selected <strong>{{ order.payment_method }}</strong>. Please complete your transaction of <strong class="text-amber-400 font-mono">${{ "%.2f"|format(order.total_amount) }}</strong> referencing order <strong class="text-white font-mono">{{ order.order_number }}</strong>.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Client Receipt Proof Upload & Status Box -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                        <i data-lucide="file-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Payment Receipt Proof</h3>
+                        <p class="text-xs text-slate-400">Upload transfer screenshot or PDF transaction confirmation</p>
+                    </div>
+                </div>
+
+                {% if order.receipt_file_url %}
+                <span class="px-3 py-1 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Receipt Uploaded
+                </span>
+                {% else %}
+                <span class="px-3 py-1 rounded-full bg-amber-950 border border-amber-800 text-amber-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Awaiting Receipt
+                </span>
+                {% endif %}
+            </div>
+
+            {% if order.receipt_file_url %}
+            <!-- Existing Uploaded Receipt Banner -->
+            <div class="bg-slate-950 border border-emerald-900/40 rounded-2xl p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-cyan-400 shrink-0">
+                            {% if order.receipt_file_url.endswith('.pdf') %}
+                            <i data-lucide="file-text" class="w-6 h-6 text-rose-400"></i>
+                            {% else %}
+                            <i data-lucide="image" class="w-6 h-6 text-emerald-400"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-white block">Submitted Proof Document</span>
+                            <span class="text-[10px] text-slate-400 font-mono">{{ order.receipt_file_url }}</span>
+                            {% if order.client_notes %}
+                            <p class="text-xs text-slate-300 mt-1"><strong class="text-slate-400">Your Notes:</strong> {{ order.client_notes }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <a href="{{ order.receipt_file_url }}" target="_blank" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i> View Receipt
+                        </a>
+                        <button type="button" onclick="document.getElementById('receipt-upload-form').classList.toggle('hidden')" class="px-4 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-bold transition">
+                            Replace Receipt
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Upload Form -->
+            <form id="receipt-upload-form" class="space-y-4 {% if order.receipt_file_url %}hidden{% endif %}" onsubmit="handleReceiptUpload(event)">
+                <div class="border-2 border-dashed border-slate-700 hover:border-cyan-500/60 rounded-2xl p-6 text-center transition cursor-pointer relative bg-slate-950/60" onclick="document.getElementById('receipt-file-input').click()">
+                    <input type="file" id="receipt-file-input" name="receipt_file" accept="image/*,application/pdf" class="hidden" onchange="previewSelectedReceipt(this)">
+                    <div class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-3 text-cyan-400">
+                        <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+                    </div>
+                    <span id="receipt-file-label" class="text-xs sm:text-sm font-bold text-white block">Click to select receipt file (PNG, JPG, PDF)</span>
+                    <span class="text-[11px] text-slate-500 block mt-1">Bank transfer slip, D17 transfer confirmation screenshot, or wire notice</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Notes / Transaction Reference (Optional)</label>
+                    <input type="text" id="receipt-notes-input" name="client_notes" placeholder="e.g. Sent via D17 from phone 98***432, Ref: TXN-998811" value="{{ order.client_notes or '' }}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" id="btn-upload-receipt" class="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold rounded-xl text-xs transition flex items-center gap-2 shadow-lg shadow-cyan-500/20">
+                        <i data-lucide="send" class="w-3.5 h-3.5 text-black"></i>
+                        <span>Upload &amp; Submit Proof</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Actions & Next Steps -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <a href="/profile#vault" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+                <i data-lucide="archive" class="w-4 h-4 text-cyan-400"></i>
+                <span>View All in My Vault</span>
+            </a>
+            <a href="/order/{{ order.order_number }}/invoice?download=1" target="_blank" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-cyan-950/20">
+                <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
+                <span>Download Official Invoice (PDF)</span>
+            </a>
+            <a href="/support?order={{ order.order_number }}" class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+                <i data-lucide="help-circle" class="w-4 h-4 text-amber-400"></i>
+                <span>Need Help?</span>
+            </a>
+        </div>
+
+        <a href="/" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-cyan-500/20">
+            <span>Continue Shopping</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-black"></i>
+        </a>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function copyKey(elementId, btn) {
+        const text = document.getElementById(elementId).innerText.trim();
+        navigator.clipboard.writeText(text).then(() => {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i><span class="text-emerald-400">Copied!</span>`;
+            lucide.createIcons();
+            showGlobalToast("Key Copied!", "Activation code copied to your clipboard.");
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                lucide.createIcons();
+            }, 2500);
+        });
+    }
+
+    function copySnippet(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>`;
+            lucide.createIcons();
+            showGlobalToast("Copied!", text + " copied to clipboard.");
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                lucide.createIcons();
+            }, 2000);
+        });
+    }
+
+    function previewSelectedReceipt(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const label = document.getElementById('receipt-file-label');
+            if (label) {
+                label.innerHTML = `<span class="text-emerald-400 font-bold">${file.name}</span> (${(file.size / 1024).toFixed(1)} KB)`;
+            }
+        }
+    }
+
+    async function handleReceiptUpload(e) {
+        e.preventDefault();
+        const form = document.getElementById('receipt-upload-form');
+        const fileInput = document.getElementById('receipt-file-input');
+        const notesInput = document.getElementById('receipt-notes-input');
+        const btn = document.getElementById('btn-upload-receipt');
+
+        if (!fileInput.files || !fileInput.files[0]) {
+            showGlobalToast("File Required", "Please select a payment receipt image or PDF file.", "error");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('receipt_file', fileInput.files[0]);
+        if (notesInput && notesInput.value) {
+            formData.append('client_notes', notesInput.value.trim());
+        }
+
+        const originalBtnHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin text-black"></i> Uploading...`;
+        lucide.createIcons();
+
+        try {
+            const res = await fetch('/order/{{ order.order_number }}/upload-receipt', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showGlobalToast("Receipt Uploaded!", data.message || "Your proof of payment was received.");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showGlobalToast("Upload Failed", data.error || "Unable to upload receipt.", "error");
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                lucide.createIcons();
+            }
+        } catch (err) {
+            console.error(err);
+            showGlobalToast("Error", "Network error while uploading receipt.", "error");
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHtml;
+            lucide.createIcons();
+        }
+    }
+</script>
+{% endblock %}

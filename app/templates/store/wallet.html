@@ -1,0 +1,683 @@
+{% extends "base.html" %}
+
+{% block title %}Nexus Wallet & Store Credit | NEXUS KEYS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+
+    <!-- Breadcrumb & Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                <a href="/" class="hover:text-cyan-400 transition">Store</a>
+                <span>/</span>
+                <a href="/profile" class="hover:text-cyan-400 transition">Account</a>
+                <span>/</span>
+                <span class="text-emerald-400 font-bold">Nexus Wallet</span>
+            </div>
+            <h1 class="text-3xl font-black text-white flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-black shadow-lg shadow-emerald-500/20">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                </div>
+                <span>Nexus Store Credit &amp; Wallet</span>
+            </h1>
+            <p class="text-xs text-slate-400 mt-1 max-w-xl">
+                Pre-load your account balance for instant 1-click checkout, zero payment gateway fees, and VIP priority delivery.
+            </p>
+        </div>
+
+        <!-- Quick CTAs -->
+        <div class="flex items-center gap-3">
+            <button 
+                onclick="openTopupModal()"
+                class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-emerald-500/25 transition flex items-center gap-2">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Top-Up Balance</span>
+            </button>
+            <a 
+                href="/" 
+                class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 text-xs font-bold transition flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                <span>Browse Store</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Notifications -->
+    <div id="wallet-alert-container">
+        <!-- Rendered by JS or query params -->
+    </div>
+
+    <!-- Hero Section: Virtual Cyber Card + Stats Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Virtual Cyber Store Card (5 cols) -->
+        <div class="lg:col-span-5">
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 p-7 border border-emerald-500/40 shadow-2xl shadow-emerald-950/50 text-white space-y-6">
+                <!-- Background decoration glow -->
+                <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Top Row: Chip + Brand -->
+                <div class="flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-7 rounded-md bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 border border-amber-200/40 shadow-inner flex items-center justify-center">
+                            <div class="w-6 h-4 border border-amber-900/40 rounded-sm grid grid-cols-2 gap-0.5 opacity-60">
+                                <div class="border-r border-amber-900/30"></div>
+                                <div></div>
+                            </div>
+                        </div>
+                        <i data-lucide="wifi" class="w-4 h-4 text-emerald-400 rotate-90"></i>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-black tracking-widest text-emerald-300 code-font">NEXUS<span class="text-white">CREDIT</span></span>
+                        <span class="block text-[9px] uppercase tracking-widest text-emerald-500 font-mono">1-CLICK VAULT</span>
+                    </div>
+                </div>
+
+                <!-- Balance Display -->
+                <div class="relative z-10 py-2">
+                    <span class="text-[11px] font-bold text-emerald-400/80 uppercase tracking-wider block">Available Store Balance</span>
+                    <div class="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight mt-1">
+                        ${{ "%.2f"|format(balance) }}
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-[11px] font-mono text-emerald-300 font-semibold">Active &amp; Ready for 1-Click Checkout</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Cardholder & Info -->
+                <div class="flex items-end justify-between pt-4 border-t border-emerald-500/20 relative z-10">
+                    <div>
+                        <span class="text-[9px] uppercase tracking-wider text-slate-400 block font-mono">Cardholder</span>
+                        <span class="text-xs font-bold text-white tracking-wide uppercase">{{ current_user.full_name }}</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] uppercase tracking-wider text-slate-400 block font-mono">Customer ID</span>
+                        <span class="text-xs font-mono font-bold text-emerald-400">#NX-{{ "%05d"|format(current_user.id) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Metrics & Feature Highlights (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-2">
+                    <div class="flex items-center justify-between text-slate-400 text-xs">
+                        <span>Lifetime Top-Ups</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                            <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-white font-mono">${{ "%.2f"|format(total_credited) }}</div>
+                    <p class="text-[11px] text-slate-500">Total funds credited into your account ledger.</p>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-2">
+                    <div class="flex items-center justify-between text-slate-400 text-xs">
+                        <span>Total 1-Click Purchases</span>
+                        <div class="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-white font-mono">${{ "%.2f"|format(total_spent) }}</div>
+                    <p class="text-[11px] text-slate-500">Total store credits redeemed for digital keys.</p>
+                </div>
+            </div>
+
+            <!-- Perks Card -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-3">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+                    <span>Why use Nexus Store Credit?</span>
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div class="p-3 bg-slate-950/60 border border-slate-800/80 rounded-2xl space-y-1">
+                        <span class="font-bold text-emerald-400 block flex items-center gap-1.5">
+                            <i data-lucide="zap" class="w-3.5 h-3.5"></i> 1-Click Checkout
+                        </span>
+                        <p class="text-[11px] text-slate-400">Bypass long payment gateways; get codes delivered in milliseconds.</p>
+                    </div>
+                    <div class="p-3 bg-slate-950/60 border border-slate-800/80 rounded-2xl space-y-1">
+                        <span class="font-bold text-cyan-400 block flex items-center gap-1.5">
+                            <i data-lucide="percent" class="w-3.5 h-3.5"></i> 0% Gateway Fees
+                        </span>
+                        <p class="text-[11px] text-slate-400">Zero processing fees when paying with pre-funded wallet credit.</p>
+                    </div>
+                    <div class="p-3 bg-slate-950/60 border border-slate-800/80 rounded-2xl space-y-1">
+                        <span class="font-bold text-teal-400 block flex items-center gap-1.5">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Encrypted Ledger
+                        </span>
+                        <p class="text-[11px] text-slate-400">Every single debit, credit, and order is tracked in an audit ledger.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VOUCHER REDEMPTION & REFERRAL PROGRAM GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Redeem Gift Voucher Card -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-teal-950/40 border border-teal-500/30 rounded-3xl p-6 sm:p-7 space-y-4 shadow-xl">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400">
+                        <i data-lucide="gift" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-white">Redeem Gift Voucher / Store Card</h3>
+                        <p class="text-[11px] text-slate-400">Instantly credit your wallet using a 16-character code</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-mono font-bold text-teal-400 bg-teal-950/60 border border-teal-800/60 px-2 py-0.5 rounded-full">INSTANT</span>
+            </div>
+
+            <div class="space-y-3 pt-2">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="voucher-code-input"
+                        placeholder="e.g. NXUS-CARD-XXXX-XXXX"
+                        maxlength="30"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-xs font-mono font-bold text-teal-300 placeholder-slate-600 focus:outline-none focus:border-teal-500 uppercase tracking-wider"
+                    />
+                    <i data-lucide="tag" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
+                </div>
+
+                <div id="voucher-status-msg" class="hidden text-xs p-2.5 rounded-xl"></div>
+
+                <button 
+                    type="button" 
+                    id="redeem-voucher-btn"
+                    onclick="submitVoucherRedemption()"
+                    class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-teal-400 to-emerald-500 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-lg shadow-teal-500/20 transition flex items-center justify-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    <span>Redeem Code to Balance</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Affiliate Referral Program Card -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/30 border border-amber-500/30 rounded-3xl p-6 sm:p-7 space-y-4 shadow-xl">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-white">Affiliate Referral Program</h3>
+                        <p class="text-[11px] text-slate-400">Earn 5% store credit every time friends make a purchase</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-mono font-bold text-amber-400 bg-amber-950/60 border border-amber-800/60 px-2 py-0.5 rounded-full">5% COMMISSION</span>
+            </div>
+
+            <div class="space-y-3 pt-2">
+                <div class="relative flex items-center">
+                    <input 
+                        type="text" 
+                        readonly
+                        id="referral-link-input"
+                        value="http://127.0.0.1:8000/auth/register?ref={{ referral_code }}"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-3 pr-24 text-xs font-mono text-slate-300 select-all focus:outline-none"
+                    />
+                    <button 
+                        type="button"
+                        onclick="copyReferralLink()"
+                        id="copy-ref-btn"
+                        class="absolute right-2 px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span>Copy</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800/80 text-center">
+                        <span class="text-[10px] text-slate-500 block uppercase">Friends Joined</span>
+                        <span class="text-sm font-bold text-white font-mono">{{ referrals_count }}</span>
+                    </div>
+                    <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800/80 text-center">
+                        <span class="text-[10px] text-slate-500 block uppercase">Commission Earned</span>
+                        <span class="text-sm font-bold text-amber-400 font-mono">+${{ "%.2f"|format(referral_earnings) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Transaction Ledger Section -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-lg font-black text-white flex items-center gap-2">
+                    <i data-lucide="history" class="w-5 h-5 text-emerald-400"></i>
+                    <span>Transaction History &amp; Audit Ledger</span>
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Immutable record of all wallet balance top-ups, 1-click purchases, and adjustments.</p>
+            </div>
+            <span class="text-xs font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-800/50 px-3 py-1 rounded-xl">
+                {{ transactions|length }} Records Logged
+            </span>
+        </div>
+
+        {% if transactions and transactions|length > 0 %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider font-bold">
+                        <th class="pb-3">Date &amp; Time</th>
+                        <th class="pb-3">Type</th>
+                        <th class="pb-3">Description / Reference</th>
+                        <th class="pb-3 text-right">Amount</th>
+                        <th class="pb-3 text-right">Balance After</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-medium">
+                    {% for t in transactions %}
+                    <tr class="hover:bg-slate-950/40 transition">
+                        <td class="py-3.5 text-slate-400 font-mono whitespace-nowrap">
+                            {{ t.created_at.strftime('%Y-%m-%d %H:%M') if t.created_at else 'N/A' }}
+                        </td>
+                        <td class="py-3.5">
+                            {% if t.transaction_type == 'topup' %}
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 font-bold uppercase text-[10px] inline-flex items-center gap-1">
+                                    <i data-lucide="arrow-down-left" class="w-3 h-3"></i> Top-Up
+                                </span>
+                            {% elif t.transaction_type == 'voucher' %}
+                                <span class="px-2 py-0.5 rounded-full bg-teal-950 border border-teal-800 text-teal-300 font-bold uppercase text-[10px] inline-flex items-center gap-1">
+                                    <i data-lucide="gift" class="w-3 h-3"></i> Gift Voucher
+                                </span>
+                            {% elif t.transaction_type == 'referral' %}
+                                <span class="px-2 py-0.5 rounded-full bg-amber-950 border border-amber-800 text-amber-300 font-bold uppercase text-[10px] inline-flex items-center gap-1">
+                                    <i data-lucide="users" class="w-3 h-3"></i> 5% Affiliate
+                                </span>
+                            {% elif t.transaction_type == 'purchase' %}
+                                <span class="px-2 py-0.5 rounded-full bg-rose-950 border border-rose-800 text-rose-400 font-bold uppercase text-[10px] inline-flex items-center gap-1">
+                                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i> 1-Click Buy
+                                </span>
+                            {% elif t.transaction_type == 'refund' %}
+                                <span class="px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 font-bold uppercase text-[10px] inline-flex items-center gap-1">
+                                    <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Refund
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded-full bg-purple-950 border border-purple-800 text-purple-400 font-bold uppercase text-[10px] inline-flex items-center gap-1">
+                                    <i data-lucide="sliders" class="w-3 h-3"></i> Adjustment
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5">
+                            <div class="text-white font-semibold">{{ t.description or 'Wallet Balance Operation' }}</div>
+                            {% if t.reference %}
+                                <div class="text-[10px] font-mono text-slate-500 mt-0.5">Ref: {{ t.reference }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 text-right font-mono font-bold whitespace-nowrap">
+                            {% if t.amount > 0 %}
+                                <span class="text-emerald-400">+${{ "%.2f"|format(t.amount) }}</span>
+                            {% else %}
+                                <span class="text-rose-400">-${{ "%.2f"|format(t.amount|abs) }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 text-right font-mono font-bold text-slate-200 whitespace-nowrap">
+                            ${{ "%.2f"|format(t.balance_after) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-12 bg-slate-950/40 rounded-2xl border border-dashed border-slate-800 space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+            </div>
+            <h4 class="text-sm font-bold text-white">No Wallet Transactions Yet</h4>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                Fund your balance using any of our accepted payment options to enjoy instant 1-click purchases.
+            </p>
+            <button 
+                onclick="openTopupModal()"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold hover:bg-emerald-500/30 transition">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add First Funds
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- TOP-UP MODAL -->
+<div id="topup-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+        <button 
+            type="button" 
+            onclick="closeTopupModal()" 
+            class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
+        <div>
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Fast Store Credit Funding</span>
+            <h3 class="text-xl font-black text-white mt-1 flex items-center gap-2">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
+                <span>Top-Up Nexus Wallet</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+                Choose an amount and your preferred funding method. Instant release to your wallet ledger.
+            </p>
+        </div>
+
+        <!-- Preset Amount Pills -->
+        <div class="space-y-2">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select Preset Amount</label>
+            <div class="grid grid-cols-4 gap-2">
+                <button type="button" onclick="setTopupAmount(10)" class="preset-btn py-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 text-xs font-mono font-bold text-white transition active-preset" data-val="10">$10</button>
+                <button type="button" onclick="setTopupAmount(25)" class="preset-btn py-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 text-xs font-mono font-bold text-white transition" data-val="25">$25</button>
+                <button type="button" onclick="setTopupAmount(50)" class="preset-btn py-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 text-xs font-mono font-bold text-white transition" data-val="50">$50</button>
+                <button type="button" onclick="setTopupAmount(100)" class="preset-btn py-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 text-xs font-mono font-bold text-white transition" data-val="100">$100</button>
+            </div>
+        </div>
+
+        <!-- Custom Amount Input -->
+        <div class="space-y-1.5">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Or Enter Custom Amount ($)</label>
+            <div class="relative">
+                <span class="absolute left-3.5 top-3 text-slate-500 font-mono text-sm font-bold">$</span>
+                <input 
+                    type="number" 
+                    id="topup-amount-input" 
+                    min="5" 
+                    max="2500" 
+                    step="1" 
+                    value="10" 
+                    class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-8 pr-4 text-sm font-mono font-bold text-white focus:outline-none focus:border-emerald-500"
+                    oninput="onCustomAmountChange(this.value)"
+                />
+            </div>
+            <span class="text-[10px] text-slate-500">Min $5.00 &bull; Max $2,500.00</span>
+        </div>
+
+        <!-- Payment Method Selection -->
+        <div class="space-y-2">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select Payment Method</label>
+            <div class="grid grid-cols-1 gap-2">
+                {% for g in gateways %}
+                <label class="cursor-pointer">
+                    <input 
+                        type="radio" 
+                        name="topup_gateway" 
+                        value="{{ g.code }}" 
+                        {% if loop.first %}checked{% endif %}
+                        class="peer sr-only" 
+                        onchange="onTopupGatewayChange('{{ g.code }}')"
+                    />
+                    <div class="p-3 rounded-xl border border-slate-800 bg-slate-950 peer-checked:border-emerald-500 peer-checked:bg-emerald-950/20 transition flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center">
+                                {% if g.code == 'stripe' %}
+                                    <i data-lucide="credit-card" class="w-4 h-4 text-cyan-400"></i>
+                                {% elif g.code == 'paypal' %}
+                                    <i data-lucide="send" class="w-4 h-4 text-indigo-400"></i>
+                                {% elif g.code == 'crypto' %}
+                                    <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
+                                {% elif g.code == 'd17' %}
+                                    <i data-lucide="smartphone" class="w-4 h-4 text-rose-400"></i>
+                                {% else %}
+                                    <i data-lucide="building" class="w-4 h-4 text-emerald-400"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-white block">{{ g.name }}</span>
+                                <span class="text-[10px] text-slate-400 block">{{ g.instructions[:50] }}...</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-mono text-emerald-400 font-bold">No Fee</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Gateway Specific Instructions (D17 & Bank Wire) -->
+        <div id="topup-details-d17" class="hidden p-3 bg-slate-950 border border-rose-900/40 rounded-xl text-xs space-y-1">
+            <span class="font-bold text-rose-400 flex items-center gap-1.5"><i data-lucide="smartphone" class="w-3.5 h-3.5"></i> D17 Mobile Transfer</span>
+            <p class="text-slate-300 text-[11px]">Envoyez au numéro D17 : <strong class="text-white font-mono">+216 98 765 432</strong></p>
+        </div>
+
+        <div id="topup-details-bank" class="hidden p-3 bg-slate-950 border border-emerald-900/40 rounded-xl text-xs space-y-1">
+            <span class="font-bold text-emerald-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5"></i> Virement Bancaire (R.I.B)</span>
+            <p class="text-slate-300 text-[11px] font-mono">R.I.B : <strong class="text-white">08 015 00011122233344 55</strong> (BIAT/Attijari)</p>
+        </div>
+
+        <!-- Optional Receipt Slip Upload for Manual Transfer -->
+        <div id="topup-receipt-container" class="hidden space-y-1.5">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Proof of Transfer / Receipt (Optional)</label>
+            <input 
+                type="file" 
+                id="topup-receipt-file" 
+                accept="image/*,application/pdf"
+                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-300 file:mr-3 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-emerald-950 file:text-emerald-400 cursor-pointer"
+            />
+        </div>
+
+        <!-- Error Message Box -->
+        <div id="topup-error" class="hidden p-3 bg-rose-950/60 border border-rose-800 rounded-xl text-xs text-rose-300"></div>
+
+        <!-- Submit Button -->
+        <button 
+            type="button" 
+            id="topup-submit-btn"
+            onclick="executeTopup()"
+            class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span id="topup-btn-label">Confirm &amp; Deposit $10.00</span>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let selectedAmount = 10;
+    let selectedGateway = 'stripe';
+
+    function openTopupModal() {
+        document.getElementById('topup-modal').classList.remove('hidden');
+        lucide.createIcons();
+    }
+
+    function closeTopupModal() {
+        document.getElementById('topup-modal').classList.add('hidden');
+    }
+
+    function setTopupAmount(amt) {
+        selectedAmount = amt;
+        document.getElementById('topup-amount-input').value = amt;
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            if (btn.getAttribute('data-val') == amt) {
+                btn.classList.add('border-emerald-500', 'bg-emerald-950/40', 'text-emerald-300');
+                btn.classList.remove('border-slate-800', 'bg-slate-950', 'text-white');
+            } else {
+                btn.classList.remove('border-emerald-500', 'bg-emerald-950/40', 'text-emerald-300');
+                btn.classList.add('border-slate-800', 'bg-slate-950', 'text-white');
+            }
+        });
+        updateButtonLabel();
+    }
+
+    function onCustomAmountChange(val) {
+        const num = parseFloat(val) || 0;
+        selectedAmount = num;
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.classList.remove('border-emerald-500', 'bg-emerald-950/40', 'text-emerald-300');
+            btn.classList.add('border-slate-800', 'bg-slate-950', 'text-white');
+        });
+        updateButtonLabel();
+    }
+
+    function updateButtonLabel() {
+        const lbl = document.getElementById('topup-btn-label');
+        lbl.innerText = `Confirm & Deposit $${selectedAmount.toFixed(2)}`;
+    }
+
+    function onTopupGatewayChange(code) {
+        selectedGateway = code;
+        const d17Box = document.getElementById('topup-details-d17');
+        const bankBox = document.getElementById('topup-details-bank');
+        const receiptBox = document.getElementById('topup-receipt-container');
+
+        if (code === 'd17') {
+            d17Box.classList.remove('hidden');
+            bankBox.classList.add('hidden');
+            receiptBox.classList.remove('hidden');
+        } else if (code === 'bank_transfer') {
+            bankBox.classList.remove('hidden');
+            d17Box.classList.add('hidden');
+            receiptBox.classList.remove('hidden');
+        } else {
+            d17Box.classList.add('hidden');
+            bankBox.classList.add('hidden');
+            receiptBox.classList.add('hidden');
+        }
+    }
+
+    async function executeTopup() {
+        const btn = document.getElementById('topup-submit-btn');
+        const err = document.getElementById('topup-error');
+        err.classList.add('hidden');
+
+        if (selectedAmount < 5.0 || selectedAmount > 2500.0) {
+            err.innerText = "Please enter an amount between $5.00 and $2,500.00.";
+            err.classList.remove('hidden');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<span class="animate-spin inline-block mr-2">&#9881;</span> Crediting balance...`;
+
+        try {
+            const formData = new FormData();
+            formData.append("amount", selectedAmount);
+            formData.append("payment_method", selectedGateway);
+
+            const receiptInput = document.getElementById('topup-receipt-file');
+            if (receiptInput && receiptInput.files && receiptInput.files[0]) {
+                formData.append("receipt_file", receiptInput.files[0]);
+            }
+
+            const resp = await fetch('/wallet/topup', {
+                method: 'POST',
+                body: formData
+            });
+
+            const res = await resp.json();
+
+            if (res.success) {
+                // Reload page with success notice
+                window.location.href = `/wallet?success=topup&amount=${selectedAmount.toFixed(2)}`;
+            } else {
+                err.innerText = res.error || "Top-up failed. Please check details.";
+                err.classList.remove('hidden');
+                btn.disabled = false;
+                updateButtonLabel();
+            }
+        } catch (ex) {
+            err.innerText = "Connection error. Please try again.";
+            err.classList.remove('hidden');
+            btn.disabled = false;
+            updateButtonLabel();
+        }
+    }
+
+    async function submitVoucherRedemption() {
+        const input = document.getElementById('voucher-code-input');
+        const btn = document.getElementById('redeem-voucher-btn');
+        const statusBox = document.getElementById('voucher-status-msg');
+
+        const code = input.value.trim().toUpperCase();
+        if (!code) {
+            statusBox.className = "text-xs p-2.5 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 block";
+            statusBox.innerText = "Please enter a voucher code.";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<span class="animate-spin inline-block mr-2">&#9881;</span> Validating voucher...`;
+
+        try {
+            const resp = await fetch('/wallet/redeem-voucher', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code })
+            });
+
+            const res = await resp.json();
+            if (res.success) {
+                window.location.href = `/wallet?success=voucher&amount=${res.amount.toFixed(2)}`;
+            } else {
+                statusBox.className = "text-xs p-2.5 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 block";
+                statusBox.innerText = res.error || "Failed to redeem voucher.";
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i><span>Redeem Code to Balance</span>`;
+                lucide.createIcons();
+            }
+        } catch (ex) {
+            statusBox.className = "text-xs p-2.5 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 block";
+            statusBox.innerText = "Network communication error. Please try again.";
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i><span>Redeem Code to Balance</span>`;
+            lucide.createIcons();
+        }
+    }
+
+    function copyReferralLink() {
+        const input = document.getElementById('referral-link-input');
+        input.select();
+        navigator.clipboard.writeText(input.value);
+        const btn = document.getElementById('copy-ref-btn');
+        btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i><span>Copied!</span>`;
+        lucide.createIcons();
+        setTimeout(() => {
+            btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i><span>Copy</span>`;
+            lucide.createIcons();
+        }, 2500);
+    }
+
+    // Check query params for notification
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const alertCont = document.getElementById('wallet-alert-container');
+        if (params.get('success') === 'topup') {
+            const amt = params.get('amount') || "0.00";
+            alertCont.innerHTML = `
+                <div class="p-4 bg-emerald-950/60 border border-emerald-500/60 rounded-2xl flex items-center justify-between text-xs text-emerald-300">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+                        <span><strong>Deposit Confirmed:</strong> $${amt} has been successfully added to your Nexus Wallet ledger!</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+            `;
+            lucide.createIcons();
+        } else if (params.get('success') === 'voucher') {
+            const amt = params.get('amount') || "0.00";
+            alertCont.innerHTML = `
+                <div class="p-4 bg-teal-950/80 border border-teal-500/70 rounded-2xl flex items-center justify-between text-xs text-teal-200 shadow-xl shadow-teal-950/40">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center">
+                            <i data-lucide="gift" class="w-4 h-4"></i>
+                        </div>
+                        <span><strong>Gift Card Claimed!</strong> $${amt} store credit has been credited to your Nexus Wallet balance!</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-teal-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+    });
+</script>
+{% endblock %}

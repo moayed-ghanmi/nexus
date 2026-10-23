@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Checkout | NEXUS KEYS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+
+    <!-- Checkout Header -->
+    <div class="border-b border-slate-800 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-black text-white flex items-center gap-3">
+                <i data-lucide="shield-check" class="w-7 h-7 text-cyan-400"></i>
+                <span>Encrypted Digital Checkout</span>
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">Instant key allocation and automated dispatch upon payment verification</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+            <span>256-Bit SSL Encrypted Session</span>
+        </div>
+    </div>
+
+    <!-- Error Toast Container -->
+    <div id="checkout-error" class="hidden p-4 rounded-2xl bg-rose-950/70 border border-rose-800 text-rose-300 text-xs flex items-center gap-3">
+        <i data-lucide="alert-circle" class="w-5 h-5 shrink-0 text-rose-400"></i>
+        <span id="checkout-error-text">An error occurred.</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Payment Methods & Delivery Info (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+            
+            <!-- 1. Recipient Customer Info -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                        <i data-lucide="user-check" class="w-4 h-4"></i> Step 1: Digital Recipient
+                    </span>
+                    <span class="text-[11px] text-slate-500 font-mono">Logged in as customer</span>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-bold text-white">{{ current_user.full_name }}</div>
+                        <div class="text-xs text-slate-400 font-mono mt-0.5">{{ current_user.email }}</div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-cyan-950/60 border border-cyan-800 text-cyan-300 text-[11px] font-bold">
+                        Keys Auto-Saved to Vault
+                    </span>
+                </div>
+            </div>
+
+            <!-- 2. Payment Gateway Selection -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5">
+                <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                    <i data-lucide="credit-card" class="w-4 h-4"></i> Step 2: Select Payment Method
+                </span>
+
+                <div class="space-y-3" id="gateways-container">
+                    {% for g in gateways %}
+                    <label class="block cursor-pointer">
+                        <input 
+                            type="radio" 
+                            name="payment_gateway" 
+                            value="{{ g.code }}" 
+                            {% if loop.first %}checked{% endif %}
+                            onchange="switchGateway('{{ g.code }}', {{ g.fee_percentage }})"
+                            class="peer sr-only"
+                        />
+                        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 peer-checked:border-cyan-500 peer-checked:bg-cyan-950/20 transition flex items-center justify-between">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-cyan-400 peer-checked:text-white shrink-0">
+                                    {% if g.code == 'wallet' %}
+                                        <i data-lucide="wallet" class="w-5 h-5 text-emerald-400"></i>
+                                    {% elif g.code == 'd17' %}
+                                        <i data-lucide="smartphone" class="w-5 h-5 text-rose-400"></i>
+                                    {% else %}
+                                        <i data-lucide="building-2" class="w-5 h-5 text-cyan-400"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-white flex items-center gap-2">
+                                        <span>{{ g.name }}</span>
+                                        {% if g.code == 'wallet' %}
+                                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold text-[9px] uppercase">1-Click</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">{{ g.instructions }}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                {% if g.code == 'wallet' %}
+                                    <span class="text-[10px] font-mono font-bold text-emerald-400 block">No Fee</span>
+                                    <span class="text-[10px] font-mono text-slate-400 block">${{ "%.2f"|format(current_user.wallet_balance or 0.0) }}</span>
+                                {% elif g.fee_percentage > 0 %}
+                                    <span class="text-[10px] font-mono font-bold text-slate-400">+{{ g.fee_percentage }}% fee</span>
+                                {% else %}
+                                    <span class="text-[10px] font-mono font-bold text-emerald-400">No Fee</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <!-- Gateway Specific Form Fields Preview -->
+                <div id="gateway-extra-fields" class="mt-4 pt-4 border-t border-slate-800">
+                    <!-- Nexus Store Credit / Wallet Balance -->
+                    <div id="fields-wallet" class="hidden space-y-3">
+                        <div class="p-4 bg-gradient-to-r from-emerald-950/60 to-slate-950 border border-emerald-500/40 rounded-2xl text-xs space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="flex items-center gap-2 text-emerald-400 font-bold">
+                                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                                    <span>Nexus Store Credit &amp; Wallet Balance</span>
+                                </span>
+                                <span class="text-xs font-mono font-black text-white bg-emerald-900/60 border border-emerald-700/50 px-2.5 py-1 rounded-lg">
+                                    Available: ${{ "%.2f"|format(current_user.wallet_balance or 0.0) }}
+                                </span>
+                            </div>
+                            <p class="text-slate-300">
+                                1-Click Instant Execution: Order is debited directly from your store balance. Zero payment processor fees, immediate digital key delivery!
+                            </p>
+                            <div id="wallet-balance-status" class="pt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Bank Transfer (R.I.B) -->
+                    <div id="fields-bank_transfer" class="hidden space-y-3">
+                        <div class="p-4 bg-slate-950 border border-emerald-900/60 rounded-2xl text-xs space-y-2">
+                            <div class="flex items-center gap-2 text-emerald-400 font-bold">
+                                <i data-lucide="building-2" class="w-4 h-4"></i>
+                                <span>Instructions de Virement Bancaire (R.I.B Officiel)</span>
+                            </div>
+                            <p class="text-slate-300">Veuillez effectuer votre virement vers notre compte bancaire officiel :</p>
+                            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 font-mono text-xs space-y-1.5 select-all">
+                                <div class="text-slate-400 text-[10px]">NUMÉRO R.I.B (20 CHIFFRES) :</div>
+                                <div class="text-emerald-400 font-bold text-sm tracking-wider">08 015 00011122233344 55</div>
+                                <div class="text-slate-400 text-[10px] pt-1">BANQUE : <strong class="text-white">BIAT / Attijari Bank Tunisie</strong> &bull; BÉNÉFICIAIRE : <strong class="text-white">NEXUS DIGITAL STORE</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- D17 / Flouci Mobile Payment -->
+                    <div id="fields-d17" class="hidden space-y-3">
+                        <div class="p-4 bg-slate-950 border border-rose-900/60 rounded-2xl text-xs space-y-2">
+                            <div class="flex items-center gap-2 text-rose-400 font-bold">
+                                <i data-lucide="smartphone" class="w-4 h-4"></i>
+                                <span>Instructions Paiement Mobile D17 / Flouci</span>
+                            </div>
+                            <p class="text-slate-300">Transférez le montant de votre commande via l'application D17 ou Flouci :</p>
+                            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 font-mono text-xs space-y-1.5 select-all">
+                                <div class="text-slate-400 text-[10px]">NUMÉRO DE TÉLÉPHONE D17 :</div>
+                                <div class="text-rose-400 font-bold text-base tracking-wider">+216 98 765 432</div>
+                                <div class="text-slate-400 text-[10px] pt-1">TITULAIRE D17 : <strong class="text-white">NEXUS KEYS</strong> &bull; DÉLAI : <span class="text-emerald-400 font-bold">Vérification prioritaire sous 15 min</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manual Receipt Upload & Client Reference Notes Box -->
+                    <div id="manual-receipt-upload-box" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-bold text-white flex items-center gap-2">
+                                <i data-lucide="upload" class="w-4 h-4 text-cyan-400"></i>
+                                <span>Preuve de Paiement / Reçu Client</span>
+                            </label>
+                            <span class="text-[10px] text-cyan-400 font-bold bg-cyan-950/60 border border-cyan-800 px-2 py-0.5 rounded-full">Recommandé</span>
+                        </div>
+                        
+                        <div class="border-2 border-dashed border-slate-800 hover:border-cyan-500 rounded-2xl p-4 text-center cursor-pointer transition bg-slate-950 group" onclick="document.getElementById('receipt-file-input').click()">
+                            <input type="file" id="receipt-file-input" name="receipt_file" accept="image/png,image/jpeg,image/webp,application/pdf" class="hidden" onchange="handleReceiptFileSelect(this)">
+                            <i data-lucide="image-plus" class="w-7 h-7 text-slate-500 group-hover:text-cyan-400 mx-auto mb-1.5 transition" id="receipt-upload-icon"></i>
+                            <div class="text-xs font-bold text-slate-300 group-hover:text-white" id="receipt-upload-label">Cliquez pour joindre votre capture d'écran ou reçu (JPG, PNG, PDF)</div>
+                            <div class="text-[10px] text-slate-500 mt-1">Vous pouvez également téléverser ou mettre à jour votre reçu après commande.</div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Numéro de Transaction / Notes Client (Optionnel)</label>
+                            <input type="text" id="client-notes-input" placeholder="Ex: Numéro SMS D17, nom de l'émetteur du virement, etc." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 font-mono">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right: Order Summary & Instant Authorize Button (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6 sticky top-24">
+                <h3 class="text-base font-bold text-white flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="receipt" class="w-4 h-4 text-cyan-400"></i> Review Order Items
+                    </span>
+                    <a href="/cart" class="text-xs text-cyan-400 hover:underline">Edit Cart</a>
+                </h3>
+
+                <!-- Cart Items Preview -->
+                <div id="checkout-items" class="space-y-3 max-h-64 overflow-y-auto divide-y divide-slate-800/60 pr-1">
+                    <div class="text-xs text-slate-500 text-center py-4">Loading your items...</div>
+                </div>
+
+                <!-- Price Breakdown -->
+                <div class="space-y-2.5 text-xs border-t border-slate-800 pt-4">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>Items Subtotal</span>
+                        <span class="text-white font-mono font-bold" id="chk-subtotal">$0.00</span>
+                    </div>
+
+                    <div id="chk-discount-row" class="hidden flex items-center justify-between text-emerald-400">
+                        <span id="chk-discount-label">Promo Discount</span>
+                        <span class="font-mono font-bold" id="chk-discount">-$0.00</span>
+                    </div>
+
+                    {% set tier = current_user.loyalty_tier %}
+                    <div id="chk-loyalty-row" class="{% if tier.discount_percent == 0 %}hidden{% endif %} flex items-center justify-between text-purple-400">
+                        <span class="flex items-center gap-1.5 font-bold">
+                            <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                            <span>{{ tier.name }} ({{ tier.discount_percent }}% VIP)</span>
+                        </span>
+                        <span class="font-mono font-bold" id="chk-loyalty-discount">-$0.00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>Gateway Fee</span>
+                        <span class="text-white font-mono font-bold" id="chk-fee">$0.00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                            <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan-400"></i> Instant Key Delivery
+                        </span>
+                        <span class="text-emerald-400 font-bold uppercase text-[11px]">FREE</span>
+                    </div>
+
+                    <div class="border-t border-slate-800 pt-3 flex items-baseline justify-between">
+                        <span class="text-sm font-bold text-white">Total to Pay</span>
+                        <span class="text-2xl font-black text-cyan-400 font-mono" id="chk-total">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button 
+                    type="button" 
+                    id="submit-order-btn"
+                    onclick="submitOrder()"
+                    class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-cyan-500/25 transition flex items-center justify-center gap-2">
+                    <i data-lucide="unlock" class="w-4 h-4 text-black"></i>
+                    <span>Authorize Payment & Reveal Keys</span>
+                </button>
+
+                <div class="text-center text-[10px] text-slate-500 space-y-1">
+                    <p>⚡ Activation codes will appear on screen immediately upon approval.</p>
+                    <p>Guaranteed authentic by Nexus Keys Digital Vault.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentGateway = "{{ gateways[0].code if gateways else 'stripe' }}";
+    let currentFeePct = {{ gateways[0].fee_percentage if gateways else 2.9 }};
+    const userWalletBalance = {{ current_user.wallet_balance or 0.0 }};
+    let validatedData = null;
+
+    function switchGateway(code, feePct) {
+        currentGateway = code;
+        currentFeePct = feePct;
+
+        // Toggle UI fields simulator
+        ['wallet', 'd17', 'bank_transfer'].forEach(g => {
+            const el = document.getElementById(`fields-${g}`);
+            if (el) {
+                if (g === code) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            }
+        });
+
+        // Show/hide receipt upload zone for manual gateways (bank_transfer and d17)
+        const uploadBox = document.getElementById('manual-receipt-upload-box');
+        if (uploadBox) {
+            if (code === 'bank_transfer' || code === 'd17') {
+                uploadBox.classList.remove('hidden');
+            } else {
+                uploadBox.classList.add('hidden');
+            }
+        }
+
+        recalcTotals();
+    }
+
+    function handleReceiptFileSelect(input) {
+        const label = document.getElementById('receipt-upload-label');
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const sizeKb = (file.size / 1024).toFixed(1);
+            label.innerHTML = `<span class="text-emerald-400 font-bold">&#10003; Reçu prêt : ${file.name}</span> <span class="text-slate-400 block text-[10px]">(${sizeKb} KB)</span>`;
+        }
+    }
+
+    async function loadCheckoutData() {
+        const rawItems = window.NexusCart.getItems();
+        if (!rawItems || rawItems.length === 0) {
+            window.location.href = "/cart";
+            return;
+        }
+
+        const coupon = localStorage.getItem('nexus_coupon') || "";
+
+        try {
+            const resp = await fetch('/api/cart/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    items: rawItems.map(i => ({ id: i.id, qty: i.qty })),
+                    coupon: coupon
+                })
+            });
+            validatedData = await resp.json();
+
+            // Render items
+            const container = document.getElementById('checkout-items');
+            container.innerHTML = validatedData.items.map(item => `
+                <div class="flex items-center justify-between py-2 text-xs">
+                    <div class="flex items-center gap-2.5 truncate max-w-[220px]">
+                        <span class="w-5 h-5 rounded-md bg-slate-800 text-cyan-400 flex items-center justify-center text-[10px] font-bold font-mono">
+                            ${item.qty}x
+                        </span>
+                        <div class="truncate">
+                            <span class="text-white font-semibold truncate block">${item.title}</span>
+                            <span class="text-[10px] text-slate-500 uppercase">${item.platform}</span>
+                        </div>
+                    </div>
+                    <span class="text-white font-mono font-bold">$${item.item_total.toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            recalcTotals();
+        } catch (err) {
+            console.error('Failed to load checkout:', err);
+        }
+    }
+
+    function recalcTotals() {
+        if (!validatedData) return;
+
+        const subtotal = validatedData.subtotal;
+        const discount = validatedData.discount;
+        
+        // VIP Loyalty Tier Discount Calculation
+        const loyaltyPct = {{ current_user.loyalty_tier.discount_percent or 0 }};
+        const loyaltyDiscount = (loyaltyPct > 0) ? Math.round((subtotal * (loyaltyPct / 100)) * 100) / 100 : 0.0;
+        const totalDiscount = discount + loyaltyDiscount;
+
+        const discountedSub = Math.max(0, subtotal - totalDiscount);
+        const fee = (currentGateway === 'wallet') ? 0.0 : Math.round((discountedSub * (currentFeePct / 100)) * 100) / 100;
+        const grandTotal = Math.round((discountedSub + fee) * 100) / 100;
+
+        document.getElementById('chk-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+        document.getElementById('chk-fee').innerText = `$${fee.toFixed(2)}`;
+        document.getElementById('chk-total').innerText = `$${grandTotal.toFixed(2)}`;
+
+        const discRow = document.getElementById('chk-discount-row');
+        if (discount > 0) {
+            discRow.classList.remove('hidden');
+            document.getElementById('chk-discount').innerText = `-$${discount.toFixed(2)}`;
+        } else {
+            discRow.classList.add('hidden');
+        }
+
+        const loyaltyRow = document.getElementById('chk-loyalty-row');
+        if (loyaltyDiscount > 0) {
+            if (loyaltyRow) loyaltyRow.classList.remove('hidden');
+            const loyaltyDiscountEl = document.getElementById('chk-loyalty-discount');
+            if (loyaltyDiscountEl) loyaltyDiscountEl.innerText = `-$${loyaltyDiscount.toFixed(2)}`;
+        } else {
+            if (loyaltyRow) loyaltyRow.classList.add('hidden');
+        }
+
+        // Wallet Balance & 1-Click Button State
+        const btn = document.getElementById('submit-order-btn');
+        if (currentGateway === 'wallet') {
+            const statusEl = document.getElementById('wallet-balance-status');
+            if (userWalletBalance >= grandTotal) {
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div class="p-2.5 bg-emerald-950/80 border border-emerald-500/60 rounded-xl text-emerald-300 text-xs font-bold flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                                Solde suffisant ($${userWalletBalance.toFixed(2)} disponible). 1-Click checkout prêt !
+                            </span>
+                            <span class="text-white font-mono">$${(userWalletBalance - grandTotal).toFixed(2)} restant</span>
+                        </div>
+                    `;
+                }
+                btn.disabled = false;
+                btn.className = "w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-emerald-500/25 transition flex items-center justify-center gap-2 cursor-pointer";
+                btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4 text-black"></i><span>Instant 1-Click Pay ($${grandTotal.toFixed(2)})</span>`;
+            } else {
+                const diff = (grandTotal - userWalletBalance).toFixed(2);
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div class="p-2.5 bg-rose-950/80 border border-rose-500/60 rounded-xl text-rose-300 text-xs flex items-center justify-between gap-2">
+                            <span>⚠️ Solde insuffisant : $${userWalletBalance.toFixed(2)} disponible (manque <strong>$${diff}</strong>).</span>
+                            <a href="/wallet" target="_blank" class="px-2.5 py-1 bg-emerald-400 hover:bg-emerald-300 text-black font-extrabold rounded-lg text-[10px] uppercase whitespace-nowrap">Recharger</a>
+                        </div>
+                    `;
+                }
+                btn.disabled = true;
+                btn.className = "w-full py-4 px-6 rounded-2xl bg-slate-800 text-slate-500 font-extrabold text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2";
+                btn.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4 text-slate-500"></i><span>Solde Insuffisant (Manque $${diff})</span>`;
+            }
+        } else {
+            btn.disabled = false;
+            btn.className = "w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-cyan-500/25 transition flex items-center justify-center gap-2 cursor-pointer";
+            btn.innerHTML = `<i data-lucide="unlock" class="w-4 h-4 text-black"></i><span>Confirmer le Paiement &amp; Révéler les Clés</span>`;
+        }
+        lucide.createIcons();
+    }
+
+    async function submitOrder() {
+        const btn = document.getElementById('submit-order-btn');
+        const errBox = document.getElementById('checkout-error');
+        const errText = document.getElementById('checkout-error-text');
+
+        btn.disabled = true;
+        btn.innerHTML = `<span class="animate-spin inline-block mr-2">⚙</span> Traitement et Enregistrement de la commande...`;
+        errBox.classList.add('hidden');
+
+        const rawItems = window.NexusCart.getItems();
+        const coupon = localStorage.getItem('nexus_coupon') || "";
+
+        try {
+            const formData = new FormData();
+            formData.append("items", JSON.stringify(rawItems.map(i => ({ id: i.id, qty: i.qty }))));
+            formData.append("payment_method", currentGateway);
+            formData.append("coupon", coupon);
+
+            const clientNotes = document.getElementById('client-notes-input') ? document.getElementById('client-notes-input').value.trim() : "";
+            formData.append("client_notes", clientNotes);
+
+            const receiptInput = document.getElementById('receipt-file-input');
+            if (receiptInput && receiptInput.files && receiptInput.files[0]) {
+                formData.append("receipt_file", receiptInput.files[0]);
+            }
+
+            const resp = await fetch('/checkout/process', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await resp.json();
+
+            if (result.success) {
+                // Clear cart from client
+                window.NexusCart.clear();
+                localStorage.removeItem('nexus_coupon');
+                // Redirect immediately to order confirmation & keys vault
+                window.location.href = result.redirect_url;
+            } else {
+                errBox.classList.remove('hidden');
+                errText.innerText = result.error || "Order processing failed.";
+                recalcTotals();
+            }
+        } catch (err) {
+            errBox.classList.remove('hidden');
+            errText.innerText = "Network communication error. Please try again.";
+            recalcTotals();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCheckoutData();
+    });
+</script>
+{% endblock %}

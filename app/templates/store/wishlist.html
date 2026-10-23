@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}My Wishlist & Restock Radar | NEXUS KEYS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+
+    <!-- Header & Breadcrumbs -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                <a href="/" class="hover:text-cyan-400 transition">Store</a>
+                <span>/</span>
+                <a href="/profile" class="hover:text-cyan-400 transition">Account</a>
+                <span>/</span>
+                <span class="text-rose-400 font-bold">Wishlist</span>
+            </div>
+            <h1 class="text-3xl font-black text-white flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-600 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
+                    <i data-lucide="heart" class="w-5 h-5 fill-white"></i>
+                </div>
+                <span>Saved Games &amp; Wishlist</span>
+            </h1>
+            <p class="text-xs text-slate-400 mt-1 max-w-xl">
+                Keep track of games and subscriptions you want. Get automated alerts when out-of-stock items are replenished.
+            </p>
+        </div>
+
+        <!-- Quick CTAs -->
+        <div class="flex items-center gap-3">
+            <a 
+                href="/" 
+                class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 text-xs font-bold transition flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-4 h-4 text-cyan-400"></i>
+                <span>Explore Catalog</span>
+            </a>
+            {% if items %}
+            <form action="/wishlist/clear" method="POST" onsubmit="return confirm('Are you sure you want to clear your entire wishlist?');">
+                <button 
+                    type="submit"
+                    class="px-4 py-2.5 rounded-2xl bg-rose-950/40 border border-rose-800/40 text-rose-400 hover:bg-rose-900/60 hover:text-white text-xs font-bold transition flex items-center gap-2">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Clear All</span>
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Summary Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Bookmarked Items</span>
+                    <span class="text-2xl font-black text-white" id="stat-total-items">{{ total_items }}</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                    <i data-lucide="bookmark" class="w-6 h-6"></i>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+                <span class="text-rose-400 font-semibold">{{ in_stock_count }}</span> ready for instant delivery
+            </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">In Stock Available</span>
+                    <span class="text-2xl font-black text-emerald-400" id="stat-in-stock">{{ in_stock_count }}</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+                <span class="text-emerald-400 font-semibold">1-Click</span> add to cart available
+            </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Total Wishlist Value</span>
+                    <span class="text-2xl font-black text-cyan-400 font-mono" id="stat-total-value">${{ "%.2f"|format(total_value) }}</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                    <i data-lucide="dollar-sign" class="w-6 h-6"></i>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+                Zero gateway fee with <a href="/wallet" class="text-emerald-400 hover:underline font-bold">Nexus Wallet</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist Items Content -->
+    {% if items %}
+    <div class="space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="list" class="w-4 h-4 text-cyan-400"></i>
+                <span>Your Saved Items ({{ items|length }})</span>
+            </h2>
+            <div class="text-xs text-slate-400">
+                Stock is refreshed automatically in real time
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="wishlist-grid">
+            {% for item in items %}
+            {% set p = item.product %}
+            {% if p %}
+            <div class="wishlist-card bg-slate-900/90 border border-slate-800 rounded-3xl p-5 hover:border-slate-700 transition flex flex-col justify-between group relative overflow-hidden" id="wishlist-item-{{ p.id }}">
+                <div>
+                    <!-- Image & Badges -->
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 mb-4 border border-slate-800/60">
+                        {% if p.image_url %}
+                        <img src="{{ p.image_url }}" alt="{{ p.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-slate-700">
+                            <i data-lucide="gamepad-2" class="w-12 h-12"></i>
+                        </div>
+                        {% endif %}
+
+                        <!-- Category Badge -->
+                        <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md border border-slate-700/60 px-2.5 py-1 rounded-xl text-[10px] font-bold text-slate-300 uppercase tracking-wider">
+                            {{ p.category.name if p.category else 'Digital' }}
+                        </span>
+
+                        <!-- Stock Status Badge -->
+                        {% if p.available_keys_count > 0 %}
+                        <span class="absolute bottom-3 left-3 bg-emerald-950/90 border border-emerald-500/40 text-emerald-400 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1 backdrop-blur-md">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            In Stock ({{ p.available_keys_count }})
+                        </span>
+                        {% else %}
+                        <span class="absolute bottom-3 left-3 bg-rose-950/90 border border-rose-500/40 text-rose-400 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1 backdrop-blur-md">
+                            <i data-lucide="bell" class="w-3 h-3 text-rose-400"></i>
+                            Restock Radar Active
+                        </span>
+                        {% endif %}
+
+                        <!-- Wishlist Toggle (Remove) Button -->
+                        <button 
+                            onclick="removeWishlistItem({{ p.id }}, this)" 
+                            class="absolute top-3 right-3 w-8 h-8 rounded-xl bg-slate-900/80 backdrop-blur-md border border-rose-500/30 text-rose-500 hover:bg-rose-500 hover:text-white transition flex items-center justify-center shadow-lg"
+                            title="Remove from wishlist">
+                            <i data-lucide="heart" class="w-4 h-4 fill-current"></i>
+                        </button>
+                    </div>
+
+                    <!-- Title & Details -->
+                    <div class="space-y-1.5">
+                        <a href="/product/{{ p.slug }}" class="text-base font-bold text-white group-hover:text-cyan-400 transition line-clamp-1">
+                            {{ p.title }}
+                        </a>
+                        <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                            {{ p.description or 'Official digital activation key delivered instantly.' }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Price and Action Center -->
+                <div class="pt-5 mt-5 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                    <div>
+                        <div class="text-[10px] text-slate-500 font-medium">Price</div>
+                        <div class="text-xl font-black text-white font-mono">${{ "%.2f"|format(p.price) }}</div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <a href="/product/{{ p.slug }}" class="p-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white transition" title="View Product Details">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </a>
+
+                        {% if p.available_keys_count > 0 %}
+                        <button 
+                            onclick="addWishlistItemToCart({{ p.id }}, '{{ p.title|replace("'", "\\'") }}', {{ p.price }}, '{{ p.image_url or '' }}', this)"
+                            class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-95 text-black font-extrabold text-xs transition flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+                            <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-black"></i>
+                            <span>Add to Cart</span>
+                        </button>
+                        {% else %}
+                        <button 
+                            disabled
+                            class="px-3.5 py-2.5 rounded-xl bg-slate-800 text-slate-400 text-xs font-semibold flex items-center gap-1.5 cursor-not-allowed opacity-75">
+                            <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-400"></i>
+                            <span>Radar Armed</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-12 text-center max-w-2xl mx-auto space-y-5">
+        <div class="w-20 h-20 rounded-3xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto shadow-xl shadow-rose-500/10">
+            <i data-lucide="heart" class="w-10 h-10 stroke-[1.5]"></i>
+        </div>
+        <div class="space-y-2">
+            <h3 class="text-xl font-black text-white">Your Wishlist is Empty</h3>
+            <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                You haven't bookmarked any digital games or subscriptions yet. Explore our store and click the heart icon on any product card to save it here!
+            </p>
+        </div>
+        <div class="pt-2">
+            <a href="/" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-cyan-500/20 transition">
+                <i data-lucide="sparkles" class="w-4 h-4 text-black"></i>
+                <span>Discover Hot Deals</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function removeWishlistItem(productId, btn) {
+        if (!confirm('Remove this game from your wishlist?')) return;
+        
+        try {
+            const res = await fetch('/api/wishlist/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: productId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const card = document.getElementById(`wishlist-item-` + productId);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.remove();
+                        // If no more cards, reload to show empty state
+                        const remaining = document.querySelectorAll('.wishlist-card');
+                        if (remaining.length === 0) {
+                            window.location.reload();
+                        } else {
+                            // Update total count
+                            const statTotal = document.getElementById('stat-total-items');
+                            if (statTotal) statTotal.textContent = remaining.length;
+                        }
+                    }, 200);
+                }
+                if (window.NexusWishlist && window.NexusWishlist.sync) {
+                    window.NexusWishlist.sync();
+                }
+            } else {
+                alert(data.error || 'Failed to update wishlist');
+            }
+        } catch (e) {
+            console.error('Error removing wishlist item:', e);
+        }
+    }
+
+    function addWishlistItemToCart(id, title, price, imageUrl, btn) {
+        if (window.NexusCart && window.NexusCart.addItem) {
+            window.NexusCart.addItem(id, title, price, imageUrl);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-black"></i><span>Added!</span>`;
+            btn.classList.add('bg-emerald-400');
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-emerald-400');
+                lucide.createIcons();
+            }, 1500);
+        }
+    }
+</script>
+{% endblock %}

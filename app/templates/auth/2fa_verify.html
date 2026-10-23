@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Two-Factor Security Verification | NEXUS KEYS{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full space-y-6">
+        
+        <!-- Header / Lock Icon -->
+        <div class="text-center space-y-2">
+            <div class="w-16 h-16 mx-auto rounded-3xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-xl shadow-purple-500/10">
+                <i data-lucide="shield-check" class="w-8 h-8"></i>
+            </div>
+            <h1 class="text-2xl font-black text-white tracking-tight">Two-Factor Authentication</h1>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                Open your authenticator app (Google Authenticator, Authy, or Microsoft Authenticator) and enter your 6-digit security code.
+            </p>
+        </div>
+
+        <!-- Verification Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            {% if alert_message %}
+            <div class="mb-5 p-3.5 rounded-2xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-semibold flex items-center gap-2.5">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i>
+                <span>{{ alert_message }}</span>
+            </div>
+            {% endif %}
+
+            <form action="{{ verify_url if verify_url else '/auth/2fa-verify' }}" method="POST" class="space-y-5">
+                <input type="hidden" name="next" value="{{ next_url if next_url else '/' }}" />
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 text-center">
+                        6-Digit Security Code
+                    </label>
+                    <input 
+                        type="text" 
+                        name="code" 
+                        id="totp-code-input"
+                        required 
+                        maxlength="6"
+                        pattern="[0-9]{6}"
+                        inputmode="numeric"
+                        autocomplete="one-time-code"
+                        autofocus
+                        placeholder="••••••"
+                        class="w-full text-center text-3xl font-mono font-black tracking-[0.5em] py-3.5 px-4 bg-slate-950 border border-slate-700/80 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition shadow-inner"
+                    />
+                </div>
+
+                <button 
+                    type="submit"
+                    class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-purple-500/25 transition flex items-center justify-center gap-2">
+                    <i data-lucide="unlock" class="w-4 h-4"></i>
+                    <span>Verify Code &amp; Access Vault</span>
+                </button>
+            </form>
+
+            <div class="mt-6 pt-5 border-t border-slate-800/80 text-center">
+                <a href="/auth/login" class="text-xs text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    <span>Return to standard sign in</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STORE SETTINGS & BRANDING // ADMIN PORTAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #07090e; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen flex bg-[#07090e] text-slate-100 antialiased selection:bg-rose-500 selection:text-white">
+
+    <!-- Admin Sidebar Navigation -->
+    <aside class="w-64 bg-slate-950 border-r border-slate-800/80 flex flex-col shrink-0">
+        <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-600/30">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <span class="text-sm font-extrabold text-white tracking-wide code-font">NEXUS<span class="text-rose-500">OPS</span></span>
+                    <span class="text-[9px] uppercase tracking-widest text-slate-500 block code-font">Control Center</span>
+                </div>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1.5 text-xs font-semibold">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-2">Core Operations</div>
+            <a href="{{ admin_secret_url }}/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-400"></i>
+                <span>Executive Dashboard</span>
+            </a>
+            <a href="{{ admin_secret_url }}/products" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i>
+                <span>Products & Keys Manager</span>
+            </a>
+            <a href="{{ admin_secret_url }}/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i>
+                <span>Categories</span>
+            </a>
+            <a href="{{ admin_secret_url }}/gateways" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i>
+                <span>Payment Gateways</span>
+            </a>
+            <a href="{{ admin_secret_url }}/tickets" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="headphones" class="w-4 h-4 text-cyan-400"></i>
+                <span>Support Inbox</span>
+            </a>
+            <a href="{{ admin_secret_url }}/coupons" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="ticket" class="w-4 h-4 text-emerald-400"></i>
+                <span>Coupons & Promotions</span>
+            </a>
+            <a href="{{ admin_secret_url }}/reviews" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+                <span>Customer Reviews</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 pt-5 mb-2">Access & Settings</div>
+            <a href="{{ admin_secret_url }}/clients" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+                <span>Clients & Status</span>
+            </a>
+            <a href="{{ admin_secret_url }}/admins" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i>
+                <span>Admin Accounts & Roles</span>
+            </a>
+            <a href="{{ admin_secret_url }}/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-950/40 border border-blue-900/50 text-blue-300">
+                <i data-lucide="settings" class="w-4 h-4 text-blue-400"></i>
+                <span>Store Settings & Branding</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between">
+            <div class="truncate">
+                <p class="text-xs font-bold text-white truncate">{{ current_admin.full_name }}</p>
+                <span class="text-[10px] code-font text-blue-400 uppercase font-semibold">{{ current_admin.role }}</span>
+            </div>
+            <a href="{{ admin_secret_url }}/logout" class="p-2 text-slate-400 hover:text-rose-400 transition" title="Logout">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto">
+        <!-- Top Operational Bar -->
+        <div class="h-16 border-b border-slate-800 px-8 flex items-center justify-between bg-slate-950/40 backdrop-blur-sm sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <span class="text-xs code-font text-slate-400">MODULE:</span>
+                <span class="text-xs font-bold text-blue-400 code-font">STOREFRONT CONFIGURATION & SITE HEALTH</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open Storefront
+                </a>
+            </div>
+        </div>
+
+        <div class="p-8 max-w-5xl mx-auto space-y-8">
+            
+            <!-- Success Notification -->
+            <div id="successNotice" class="hidden p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-sm font-semibold flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+                    <span>Storefront configuration and announcement banner successfully updated.</span>
+                </div>
+                <button onclick="this.parentElement.style.display='none'" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Page Header -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-black text-white">Storefront Branding & System Settings</h1>
+                    <p class="text-xs text-slate-400 mt-1">Configure global store metadata, customer announcements, currencies, and emergency maintenance status.</p>
+                </div>
+            </div>
+
+            <form action="{{ admin_secret_url }}/settings/update" method="POST" class="space-y-6">
+                
+                <!-- 1. General Branding & Contact -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5">
+                    <div class="flex items-center gap-3 border-b border-slate-800/80 pb-4">
+                        <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+                            <i data-lucide="store" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold text-white">Store Identity & Branding</h2>
+                            <p class="text-xs text-slate-400">Controls header logos, customer receipts, and email contact info.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">Store Name</label>
+                            <input type="text" name="store_name" value="{{ settings.get('store_name', 'NEXUS KEYS') }}" required
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">Tagline / Motto</label>
+                            <input type="text" name="tagline" value="{{ settings.get('tagline', 'Instant Digital Delivery Engine') }}"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">Support Email</label>
+                            <input type="email" name="support_email" value="{{ settings.get('support_email', 'support@nexuskeys.io') }}" required
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">Base Currency Symbol</label>
+                            <input type="text" name="currency_symbol" value="{{ settings.get('currency_symbol', '$') }}" required
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 code-font">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Marketing Announcement Bar -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+                                <i data-lucide="megaphone" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-white">Marketing Announcement Bar</h2>
+                                <p class="text-xs text-slate-400">Broadcasts site-wide promotions, discount codes, or flash sale alerts.</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="announcement_banner_active" value="true" class="sr-only peer"
+                                   {% if settings.get('announcement_banner_active') == 'true' %}checked{% endif %}>
+                            <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                            <span class="ml-3 text-xs font-bold text-slate-300">Active</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-2">Announcement Message</label>
+                        <textarea name="announcement_banner_text" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="e.g. FLASH SALE: Get 10% off all gaming gift cards with code GAMER10! Free instant key delivery.">{{ settings.get('announcement_banner_text', '') }}</textarea>
+                    </div>
+
+                    <!-- Live Banner Preview -->
+                    <div class="p-3.5 rounded-xl bg-gradient-to-r from-rose-900/40 via-amber-900/30 to-purple-900/40 border border-amber-700/40 text-center text-xs font-bold text-amber-200 flex items-center justify-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-400 animate-spin"></i>
+                        <span>PREVIEW: {{ settings.get('announcement_banner_text', 'No announcement message set.') }}</span>
+                    </div>
+                </div>
+
+                <!-- 3. Store Maintenance Mode -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+                                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-white">Emergency Maintenance Mode</h2>
+                                <p class="text-xs text-slate-400">Lock down the public storefront during upgrades, migrations, or security audits.</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="maintenance_mode" value="true" class="sr-only peer"
+                                   {% if settings.get('maintenance_mode') == 'true' %}checked{% endif %}>
+                            <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                            <span class="ml-3 text-xs font-bold text-rose-300">Lockdown</span>
+                        </label>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-rose-950/20 border border-rose-900/40 text-xs text-slate-300 space-y-2">
+                        <div class="font-bold text-rose-400 flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                            Administrator Bypass Active
+                        </div>
+                        <p>
+                            When Maintenance Mode is <strong>ON</strong>, all standard customer traffic is intercepted and served a stylish "Maintenance & Hardware Upgrade" splash page. Logged-in administrators retain full access to test products, browse pages, and use the secret admin console unimpeded.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 4. Automated Order Receipt & SMTP Email Settings -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                                <i data-lucide="mail-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-white">Automated Customer Email Receipts & SMTP Engine</h2>
+                                <p class="text-xs text-slate-400">Configure outgoing email delivery to automatically email receipts and license keys upon payment confirmation.</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-800 text-emerald-400 text-[10px] font-bold">
+                            Active Auto-Dispatch
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">SMTP Host</label>
+                            <input type="text" name="smtp_host" value="{{ settings.get('smtp_host', 'smtp.gmail.com') }}" placeholder="smtp.gmail.com"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">SMTP Port</label>
+                            <input type="text" name="smtp_port" value="{{ settings.get('smtp_port', '587') }}" placeholder="587"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">From Email (Sender)</label>
+                            <input type="email" name="smtp_from_email" value="{{ settings.get('smtp_from_email', 'orders@nexuskeys.store') }}" placeholder="orders@nexuskeys.store"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">SMTP Username / Email</label>
+                            <input type="text" name="smtp_user" value="{{ settings.get('smtp_user', '') }}" placeholder="you@gmail.com"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">SMTP Password / App Password</label>
+                            <input type="password" name="smtp_password" value="" placeholder="•••••••••••• (Leave blank to keep current)"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">Encryption (TLS)</label>
+                            <select name="smtp_use_tls" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-semibold">
+                                <option value="true" {% if settings.get('smtp_use_tls', 'true') == 'true' %}selected{% endif %}>STARTTLS (Port 587 - Recommended)</option>
+                                <option value="false" {% if settings.get('smtp_use_tls', 'true') == 'false' %}selected{% endif %}>SSL / None (Port 465 / 25)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Test Email Tool -->
+                    <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/60 p-4 rounded-xl">
+                        <div class="text-xs text-slate-400">
+                            <strong class="text-white block">Test Outgoing Email Dispatch:</strong>
+                            Send an immediate test confirmation message to verify SMTP connectivity.
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="email" id="test-email-target" placeholder="test@recipient.com" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                            <button type="button" onclick="sendTestEmail()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold transition flex items-center gap-1.5">
+                                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                                <span>Send Test</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 transition flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Save All Settings</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        if (window.location.search.includes('success=updated')) {
+            document.getElementById('successNotice').classList.remove('hidden');
+        }
+
+        async function sendTestEmail() {
+            const emailInput = document.getElementById('test-email-target');
+            const target = emailInput.value.trim();
+            if (!target) {
+                alert("Please enter a recipient email address to test.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("test_email", target);
+
+            try {
+                const resp = await fetch("{{ admin_secret_url }}/settings/test-email", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    alert(data.message || `Test email dispatched to ${target}!`);
+                } else {
+                    alert(`SMTP Error: ${data.error}`);
+                }
+            } catch (err) {
+                alert("Network communication error testing SMTP.");
+            }
+        }
+    </script>
+</body>
+</html>

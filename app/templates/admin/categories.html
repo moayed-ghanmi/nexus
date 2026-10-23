@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CATEGORIES // ADMIN PORTAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #07090e; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen flex bg-[#07090e] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Admin Sidebar Navigation -->
+    <aside class="w-64 bg-slate-950 border-r border-slate-800/80 flex flex-col shrink-0">
+        <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-600/30">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <span class="text-sm font-extrabold text-white tracking-wide code-font">NEXUS<span class="text-rose-500">OPS</span></span>
+                    <span class="text-[9px] uppercase tracking-widest text-slate-500 block code-font">Control Center</span>
+                </div>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1.5 text-xs font-semibold">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-2">Core Operations</div>
+            <a href="{{ admin_secret_url }}/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-400"></i>
+                <span>Executive Dashboard</span>
+            </a>
+            <a href="{{ admin_secret_url }}/products" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i>
+                <span>Products & Keys Manager</span>
+            </a>
+            <a href="{{ admin_secret_url }}/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-950/40 border border-indigo-900/50 text-indigo-300">
+                <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i>
+                <span>Categories</span>
+            </a>
+            <a href="{{ admin_secret_url }}/gateways" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i>
+                <span>Payment Gateways</span>
+            </a>
+            <a href="{{ admin_secret_url }}/coupons" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="ticket" class="w-4 h-4 text-emerald-400"></i>
+                <span>Coupons & Promotions</span>
+            </a>
+            <a href="{{ admin_secret_url }}/reviews" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+                <span>Customer Reviews</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 pt-5 mb-2">Access & Settings</div>
+            <a href="{{ admin_secret_url }}/clients" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+                <span>Clients & Status</span>
+            </a>
+            {% if current_admin.role == 'super_admin' %}
+            <a href="{{ admin_secret_url }}/admins" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i>
+                <span>Admin Accounts & Roles</span>
+            </a>
+            <a href="{{ admin_secret_url }}/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                <i data-lucide="settings" class="w-4 h-4 text-blue-400"></i>
+                <span>Store Settings & Branding</span>
+            </a>
+            {% else %}
+            <div class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-600 bg-slate-950/40 border border-slate-900 cursor-not-allowed">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-slate-600"></i>
+                    <span>Admin Accounts</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 text-[9px] text-slate-500 font-bold">LOCKED</span>
+            </div>
+            <div class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-600 bg-slate-950/40 border border-slate-900 cursor-not-allowed">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="settings" class="w-4 h-4 text-slate-600"></i>
+                    <span>Store Settings</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 text-[9px] text-slate-500 font-bold">LOCKED</span>
+            </div>
+            {% endif %}
+        </nav>
+
+        <div class="p-4 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between">
+            <div class="truncate">
+                <p class="text-xs font-bold text-white truncate">{{ current_admin.full_name }}</p>
+                <span class="text-[10px] code-font text-rose-400 font-bold uppercase">{{ current_admin.role }}</span>
+            </div>
+            <a href="{{ admin_secret_url }}/logout" class="p-2 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded-lg text-xs" title="Logout">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 overflow-y-auto p-8 space-y-6">
+
+        <!-- Banner Notifications -->
+        {% if success %}
+        <div class="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs flex items-center gap-3">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+            <span>{{ success }}</span>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="p-4 rounded-2xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-3">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-indigo-950 border border-indigo-800 text-indigo-400 text-[10px] font-bold uppercase tracking-wider">
+                        Catalog Taxonomy &amp; Navigation
+                    </span>
+                </div>
+                <h1 class="text-2xl font-black text-white mt-1">Product Categories Controller</h1>
+                <p class="text-xs text-slate-400">Organize digital items into discoverable storefront categories and filter tags</p>
+            </div>
+
+            <button onclick="document.getElementById('add-category-modal').classList.remove('hidden')" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Add Category</span>
+            </button>
+        </div>
+
+        <!-- KPI Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Active Categories</span>
+                <span class="text-2xl font-black text-white mt-1 block">{{ categories|length }}</span>
+                <span class="text-[10px] text-slate-400">Configured in SQLite catalog</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Catalog Products</span>
+                <span class="text-2xl font-black text-indigo-400 mt-1 block">
+                    {{ categories|sum(attribute='products_count') }}
+                </span>
+                <span class="text-[10px] text-slate-400">Assigned across all categories</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Storefront Filter Status</span>
+                <span class="text-sm font-bold text-emerald-400 mt-2 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+                    Live Autocomplete Active
+                </span>
+                <span class="text-[10px] text-slate-400">Instant navbar search indexed</span>
+            </div>
+        </div>
+
+        <!-- Categories Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-sm font-black text-white">Configured Categories</h3>
+                <span class="text-xs text-slate-400">{{ categories|length }} items</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-800 bg-slate-950/40 text-slate-400 uppercase tracking-wider font-bold">
+                            <th class="py-3 px-5">Order</th>
+                            <th class="py-3 px-5">Category Name</th>
+                            <th class="py-3 px-5">URL Slug</th>
+                            <th class="py-3 px-5">Description</th>
+                            <th class="py-3 px-5">Assigned Products</th>
+                            <th class="py-3 px-5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-medium">
+                        {% for cat in categories %}
+                        <tr class="hover:bg-slate-950/40 transition">
+                            <td class="py-3.5 px-5 font-mono text-slate-500">#{{ cat.display_order }}</td>
+                            <td class="py-3.5 px-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-950/80 border border-indigo-800/80 flex items-center justify-center text-indigo-400">
+                                        <i data-lucide="{{ cat.icon }}" class="w-4 h-4"></i>
+                                    </div>
+                                    <span class="font-bold text-white text-sm">{{ cat.name }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-5 font-mono text-indigo-400">{{ cat.slug }}</td>
+                            <td class="py-3.5 px-5 text-slate-400 max-w-xs truncate">{{ cat.description or '—' }}</td>
+                            <td class="py-3.5 px-5">
+                                <span class="px-2.5 py-1 rounded-full bg-slate-950 border border-slate-800 text-xs font-bold text-slate-200">
+                                    {{ cat.products_count }} products
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-5 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <button onclick="openEditCategoryModal({{ cat.id }})" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 text-xs font-bold transition flex items-center gap-1">
+                                        <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Edit
+                                    </button>
+
+                                    {% if current_admin.role == 'super_admin' %}
+                                    <form action="{{ admin_secret_url }}/categories/{{ cat.id }}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete category \'{{ cat.name }}\'?')">
+                                        <button type="submit" {% if cat.products_count > 0 %}disabled title="Cannot delete category with assigned products" class="px-3 py-1.5 rounded-lg bg-slate-950 text-slate-600 border border-slate-900 text-xs font-bold cursor-not-allowed opacity-50 flex items-center gap-1"{% else %}class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs font-bold transition flex items-center gap-1"{% endif %}>
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: Add Category -->
+    <div id="add-category-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest code-font">Catalog Setup</span>
+                    <h3 class="text-base font-black text-white">Create New Category</h3>
+                </div>
+                <button onclick="document.getElementById('add-category-modal').classList.add('hidden')" class="p-2 text-slate-400 hover:text-white rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form action="{{ admin_secret_url }}/categories/add" method="POST" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Category Name *</label>
+                    <input type="text" name="name" required placeholder="e.g. Gift Cards &amp; Wallets" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-300 mb-1">URL Slug (Auto if blank)</label>
+                        <input type="text" name="slug" placeholder="e.g. gift-cards" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-300 mb-1">Display Order</label>
+                        <input type="number" name="display_order" value="0" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Lucide Icon Name</label>
+                    <select name="icon" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                        <option value="gamepad-2">gamepad-2 (Gaming)</option>
+                        <option value="gift">gift (Gift Cards)</option>
+                        <option value="shield-check">shield-check (Security &amp; VPN)</option>
+                        <option value="music">music (Audio &amp; Streaming)</option>
+                        <option value="tv">tv (TV &amp; Movies)</option>
+                        <option value="key">key (License Keys)</option>
+                        <option value="layers">layers (Software)</option>
+                        <option value="tag">tag (General Deals)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Description (Optional)</label>
+                    <textarea name="description" rows="2" placeholder="Brief description for SEO and category preview" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="document.getElementById('add-category-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-bold transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i> Save Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Category -->
+    <div id="edit-category-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest code-font">Modify Category</span>
+                    <h3 class="text-base font-black text-white" id="edit-cat-title">Edit Category</h3>
+                </div>
+                <button onclick="document.getElementById('edit-category-modal').classList.add('hidden')" class="p-2 text-slate-400 hover:text-white rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="edit-category-form" method="POST" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Category Name *</label>
+                    <input type="text" id="edit-cat-name" name="name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-300 mb-1">URL Slug *</label>
+                        <input type="text" id="edit-cat-slug" name="slug" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-300 mb-1">Display Order</label>
+                        <input type="number" id="edit-cat-order" name="display_order" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Lucide Icon Name</label>
+                    <select id="edit-cat-icon" name="icon" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                        <option value="gamepad-2">gamepad-2 (Gaming)</option>
+                        <option value="gift">gift (Gift Cards)</option>
+                        <option value="shield-check">shield-check (Security &amp; VPN)</option>
+                        <option value="music">music (Audio &amp; Streaming)</option>
+                        <option value="tv">tv (TV &amp; Movies)</option>
+                        <option value="key">key (License Keys)</option>
+                        <option value="layers">layers (Software)</option>
+                        <option value="tag">tag (General Deals)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Description</label>
+                    <textarea id="edit-cat-desc" name="description" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="document.getElementById('edit-category-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-bold transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i> Update Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        async function openEditCategoryModal(categoryId) {
+            try {
+                const res = await fetch(`{{ admin_secret_url }}/categories/${categoryId}/details`);
+                const data = await res.json();
+                if (!data.success) {
+                    alert('Error loading category details');
+                    return;
+                }
+
+                const cat = data.category;
+                document.getElementById('edit-cat-title').innerText = `Edit: ${cat.name}`;
+                document.getElementById('edit-cat-name').value = cat.name;
+                document.getElementById('edit-cat-slug').value = cat.slug;
+                document.getElementById('edit-cat-order').value = cat.display_order;
+                document.getElementById('edit-cat-icon').value = cat.icon;
+                document.getElementById('edit-cat-desc').value = cat.description;
+
+                document.getElementById('edit-category-form').action = `{{ admin_secret_url }}/categories/${categoryId}/update`;
+                document.getElementById('edit-category-modal').classList.remove('hidden');
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Could not fetch category details.');
+            }
+        }
+    </script>
+</body>
+</html>
